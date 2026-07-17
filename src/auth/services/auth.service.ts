@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+// auth.service.ts
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { AuthEntity } from '../entities/auth.entity';
 import { SignUpAuthDto } from '../dto/signup-auth.dto';
-import { UpdateAuthDto } from '../dto/update-auth.dto';
+import { HashPassword } from './hashPassword.service';
 
 @Injectable()
 export class AuthService {
-  register(createAuthDto: SignUpAuthDto) {
-    console.log(createAuthDto);
-  }
+  constructor(
+    @InjectRepository(AuthEntity)
+    private authRepository: Repository<AuthEntity>,
+    private jwtService: JwtService, 
+    private hashPassword:HashPassword
+  ) {}
 
-  findAll() {
-    return `This action returns all auth`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async register(signUpAuthDto: SignUpAuthDto) {
+    // 1. Hash the password
+    this.hashPassword.hashPassword
+    // 2. Create user with hashed password
+    const newUser = this.authRepository.create({
+      email: signUpAuthDto.email,
+      password: hashedPassword, // ✅ Store hashed password, not plain text
+    });
+    
+    // 3. Save user to database
+    const savedUser = await this.authRepository.save(newUser); // ✅ Add 'await'
+    
+    // 4. Generate JWT token
+    const payload = { 
+      sub: savedUser.id, 
+      email: savedUser.email 
+    };
+    const token = await this.jwtService.signAsync(payload); // ✅ Use signAsync or sign
+    
+    return {
+      user: {
+        id: savedUser.id,
+        email: savedUser.email,
+      },
+      token: token,
+    };
   }
 }

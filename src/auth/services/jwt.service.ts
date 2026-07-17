@@ -2,7 +2,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {JwtService} from '@nestjs/jwt'
 @Injectable()
-export class AuthService {
+export class JWTService {
 constructor(private readonly jwt:JwtService){}
     async generateToken(userId:string,email:string): Promise<string> {
         const payload = { sub: userId, email: email };
