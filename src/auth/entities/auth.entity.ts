@@ -1,1 +1,7 @@
-export class Auth {}
+import { IsNotEmpty } from "class-validator";
+
+export class AuthEntity {
+
+    @IsNotEmpty()
+    
+}
