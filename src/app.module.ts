@@ -5,6 +5,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthEntity } from './auth/entities/auth.entity';
+import { ProfileModule } from './profile/profile.module';
+import { ProfileEntity } from './profile/entities/profile.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { AuthEntity } from './auth/entities/auth.entity';
         port: parseInt(configService.get('DB_PORT') as string),
         username: configService.get('DB_USERNAME') as string,
         password: configService.get('DB_PASSWORD') as string,
-        entities: [AuthEntity],
+        entities: [AuthEntity,ProfileEntity],
         database: configService.get('DB') as string,
         synchronize: true,
         logger: 'advanced-console',
@@ -29,7 +31,8 @@ import { AuthEntity } from './auth/entities/auth.entity';
         retryDelay: 1000,
         retryAttempts: 3,
         autoLoadEntities: true,
-      })})
+      })}),
+    ProfileModule
   ], 
    controllers: [AppController],
   providers: [AppService],
