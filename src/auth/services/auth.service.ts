@@ -1,46 +1,61 @@
 // auth.service.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from '../entities/auth.entity';
 import { SignUpAuthDto } from '../dto/signup-auth.dto';
-import { HashPassword } from './hashPassword.service';
+import { HashService } from './hashPassword.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(AuthEntity)
     private authRepository: Repository<AuthEntity>,
-    private jwtService: JwtService, 
-    private hashPassword:HashPassword
+    private jwtService: JwtService,
+    private hashPassword: HashService,
   ) {}
 
   async register(signUpAuthDto: SignUpAuthDto) {
-    // 1. Hash the password
-    this.hashPassword.hashPassword
-    // 2. Create user with hashed password
+        const existingUser = await this.authRepository.findOne({
+      where: { email: signUpAuthDto.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('User already exists');
+    }
+
+    const hashedPassword = await this.hashPassword.hash(signUpAuthDto.password);
+
     const newUser = this.authRepository.create({
       email: signUpAuthDto.email,
-      password: hashedPassword, // ✅ Store hashed password, not plain text
+      hashedPassword  
     });
-    
-    // 3. Save user to database
-    const savedUser = await this.authRepository.save(newUser); // ✅ Add 'await'
-    
-    // 4. Generate JWT token
-    const payload = { 
-      sub: savedUser.id, 
-      email: savedUser.email 
+
+    const savedUser = await this.authRepository.save(newUser);
+
+    const payload = {
+      sub: savedUser.id,
+      email: savedUser.email,
     };
-    const token = await this.jwtService.signAsync(payload); // ✅ Use signAsync or sign
-    
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, { expiresIn: '15m' }),
+      this.jwtService.signAsync(payload, { expiresIn: '7d' }),
+    ]);
+
+    savedUser.refreshToken = refreshToken;
+    await this.authRepository.save(savedUser);
+
+  
     return {
+      success: true,
+      message: 'Registration successful',
       user: {
         id: savedUser.id,
         email: savedUser.email,
       },
-      token: token,
+      accessToken
     };
   }
 }

@@ -22,8 +22,8 @@ role:UserRole
 @Column({type:"boolean",nullable:false,default:true})
 isActive:boolean
 
-@Column({type:"varchar",nullable:false})
-refreshToken:string
+@Column({type:"varchar",nullable:true})
+refreshToken?:string
 
 @OneToOne(() => ProfileEntity, (profile) => profile.auth, {
     cascade: false,
