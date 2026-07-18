@@ -26,8 +26,7 @@ isActive:boolean
 refreshToken?:string
 
 @OneToOne(() => ProfileEntity, (profile) => profile.auth, {
-    cascade: false,
-    nullable: true,
+    nullable:false,
   })
   profile: ProfileEntity;
 

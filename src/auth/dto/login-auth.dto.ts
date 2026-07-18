@@ -1,16 +1,13 @@
-import { Type } from "class-transformer";
 import { 
     IsEmail, 
     IsString, 
     Matches, 
     MaxLength, 
     MinLength,
-    IsNotEmpty,
-    IsObject,
-    ValidateNested
+    IsNotEmpty
   } from "class-validator";
-import { CreateProfileDto } from "src/profile/dto/create-profile.dto";
-  export class SignUpAuthDto {
+
+  export class LoginAuthDto {
       @IsEmail({}, { message: 'Please provide a valid email address' })
       @IsNotEmpty({ message: 'Email is required' })
       @MaxLength(1024, { message: 'Email is too long' })
@@ -23,12 +20,8 @@ import { CreateProfileDto } from "src/profile/dto/create-profile.dto";
       @IsNotEmpty({ message: 'Password is required' })
       @MinLength(8, { message: 'Password must be at least 8 characters' })
       @MaxLength(256, { message: 'Password is too long' })
+   
       password: string;
-
-
-      @ValidateNested()
-      @Type(() => CreateProfileDto) 
-      profile: CreateProfileDto;
 
 
   }
