@@ -1,24 +1,23 @@
 // auth.controller.ts
 import { Controller, Post, Body, Res, Req } from '@nestjs/common';
 import { type Request, type Response } from 'express';
-import { SignUpAuthDto } from '../dto/signup-auth.dto';
 import { AuthServiceResponse } from '../types';
-import { AuthService } from '../services/auth.service';
-
+import { RegsiterService } from '../services/auth/register.service';
+import { RegisterAuthDto } from '../dto/register-auth.dto';
 @Controller('auth')
 export class RegisterController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly registerService: RegsiterService) {}
 
   @Post('register')
   async register(
-    @Body() signUpAuthDto: SignUpAuthDto,
+    @Body() signUpAuthDto: RegisterAuthDto,
     @Res() res: Response,
     @Req() req: Request,
   ): Promise<Response> {
     console.log(signUpAuthDto);
 
     const result: AuthServiceResponse =
-      await this.authService.register(signUpAuthDto);
+      await this.registerService.register(signUpAuthDto);
     const { accessToken, user } = result;
 
     // ✅ Set cookie

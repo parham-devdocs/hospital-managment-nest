@@ -10,7 +10,7 @@ import {
     ValidateNested
   } from "class-validator";
 import { CreateProfileDto } from "src/profile/dto/create-profile.dto";
-  export class SignUpAuthDto {
+  export class  RegisterAuthDto {
       @IsEmail({}, { message: 'Please provide a valid email address' })
       @IsNotEmpty({ message: 'Email is required' })
       @MaxLength(1024, { message: 'Email is too long' })
