@@ -3,6 +3,7 @@ import { LoginService } from './login.service';
 import { RegsiterService } from './register.service';
 import { LogoutService } from './logout.service';
 import { RegisterAuthDto } from 'src/auth/dto/register-auth.dto';
+import { LoginAuthDto } from 'src/auth/dto/login-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,8 +13,8 @@ export class AuthService {
     private readonly logoutService: LogoutService,
   ) {}
 
-  login() {
-    return this.loginService.login();
+  login(loginAuthDto:LoginAuthDto) {
+    return this.loginService.login(loginAuthDto);
   }
   logout() {
     return this.logoutService.logout();

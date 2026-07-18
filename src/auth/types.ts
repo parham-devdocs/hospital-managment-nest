@@ -6,7 +6,15 @@ export enum UserRole{
     doctor="Doctor"
 }
 // types/auth-response.interface.ts
-export interface AuthServiceResponse {
+export interface RegisterServiceResponse {
+    user: {
+      id: string;
+      email: string;
+    };
+    accessToken: string;
+  }
+
+  export interface LoginServiceResponse{
     user: {
       id: string;
       email: string;

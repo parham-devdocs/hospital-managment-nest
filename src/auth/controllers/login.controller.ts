@@ -1,9 +1,10 @@
 // auth.controller.ts
 import { Controller, Post, Body, Res, Req } from '@nestjs/common';
 import { type Request, type Response } from 'express';
-import { AuthServiceResponse } from '../types';
 import { AuthService } from '../services/auth/auth.service';
 import { RegisterAuthDto } from '../dto/register-auth.dto';
+import { LoginServiceResponse, RegisterServiceResponse } from '../types';
+import { LoginAuthDto } from '../dto/login-auth.dto';
 
 @Controller('auth')
 export class LoginController {
@@ -11,13 +12,12 @@ export class LoginController {
 
   @Post('login')
   async register(
-    @Body()  registerAuthDto:RegisterAuthDto,
+    @Body()  loginAuthDto:LoginAuthDto,
     @Res() res: Response,
     @Req() req: Request,
   ): Promise<Response> {
 
-    const result: AuthServiceResponse =
-      await this.authService.register(registerAuthDto);
+    const result: LoginServiceResponse = await this.authService.login(loginAuthDto);
     const { accessToken, user } = result;
 
     // ✅ Set cookie

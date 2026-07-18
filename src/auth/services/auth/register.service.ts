@@ -5,6 +5,8 @@ import * as bcrypt from 'bcrypt';
 import { AuthEntity } from '../../entities/auth.entity';
 import { ProfileEntity } from 'src/profile/entities/profile.entity';
 import { RegisterAuthDto } from 'src/auth/dto/register-auth.dto';
+import { JWTService } from '../jwt.service';
+import { RegisterServiceResponse } from 'src/auth/types';
 
 @Injectable()
 export class RegsiterService {
@@ -14,9 +16,10 @@ export class RegsiterService {
     @InjectRepository(ProfileEntity)
     private profileRepository: Repository<ProfileEntity>,
     private dataSource: DataSource,
+    private readonly jwtService:JWTService
   ) {}
 
-  async register(signUpDto: RegisterAuthDto): Promise<any> {
+  async register(signUpDto: RegisterAuthDto): Promise<RegisterServiceResponse> {
     const { email, password, profile } = signUpDto;
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -36,9 +39,13 @@ export class RegsiterService {
 
       const newUser = this.authRepository.create({
         email, 
-        hashedPassword,     });
+        hashedPassword, 
+        });
 
       const savedUser = await queryRunner.manager.save(newUser);
+
+      const accessToken=await this.jwtService.generateToken(savedUser.id,savedUser.email)
+      const refreshToken=await this.jwtService.generateRefreshToken(savedUser.id,savedUser.email)
 
       const newProfile = this.profileRepository.create({
         auth: savedUser,
@@ -48,21 +55,23 @@ export class RegsiterService {
         phoneNumber: profile.phoneNumber,
         age: profile.age,
         gender: profile.gender,
+        
       });
 
       const savedProfile = await queryRunner.manager.save(newProfile);
 
       savedUser.profile = savedProfile;
+      savedUser.refreshToken=refreshToken
+
       await queryRunner.manager.save(savedUser);
 
       await queryRunner.commitTransaction();
 
       const { hashedPassword: _, refreshToken: __, ...userResult } = savedUser;
-      const { auth, ...profileResult } = savedProfile;
 
       return {
-        ...userResult,
-        profile: profileResult,
+      user:userResult,
+        accessToken
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
