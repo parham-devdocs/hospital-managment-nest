@@ -1,8 +1,6 @@
-// auth.controller.ts
 import { Controller, Post, Body, Res, Req } from '@nestjs/common';
 import { type Request, type Response } from 'express';
 import { AuthService } from '../services/auth/auth.service';
-import { RegisterAuthDto } from '../dto/register-auth.dto';
 import { LoginServiceResponse, RegisterServiceResponse } from '../types';
 import { LoginAuthDto } from '../dto/login-auth.dto';
 

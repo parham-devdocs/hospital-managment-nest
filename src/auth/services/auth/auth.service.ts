@@ -11,13 +11,14 @@ export class AuthService {
     private readonly registerService: RegsiterService,
     private readonly loginService: LoginService,
     private readonly logoutService: LogoutService,
+    
   ) {}
 
   login(loginAuthDto:LoginAuthDto) {
     return this.loginService.login(loginAuthDto);
   }
-  logout() {
-    return this.logoutService.logout();
+  logout(id:string) {
+    return this.logoutService.logout(id);
   }
   register(registerAuthDto: RegisterAuthDto) {
     return this.registerService.register(registerAuthDto);
