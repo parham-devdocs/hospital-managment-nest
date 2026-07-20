@@ -21,3 +21,8 @@ export interface RegisterServiceResponse {
     };
     accessToken: string;
   }
+
+  export enum Gender{
+    "MALE"="male",
+    "FEMALE"="female"
+  }

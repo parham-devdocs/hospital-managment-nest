@@ -4,7 +4,6 @@ import { AuthEntity } from './entities/auth.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { RegisterController } from './controllers/register.controller';
 import { LoginController } from './controllers/login.controller';
-import { ProfileEntity } from 'src/profile/entities/profile.entity';
 import { RegsiterService } from './services/auth/register.service';
 import { LoginService } from './services/auth/login.service';
 import { AuthService } from './services/auth/auth.service';
@@ -16,7 +15,7 @@ import { JWTService } from './services/jwt.service';
   controllers: [RegisterController, LoginController],
   providers: [RegsiterService,AuthService,LoginService,LogoutService,RegsiterService, PasswordService,JWTService],
   imports: [
-    TypeOrmModule.forFeature([AuthEntity, ProfileEntity]),
+    TypeOrmModule.forFeature([AuthEntity]),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-secret-key',
       signOptions: { expiresIn: '1d' },

@@ -14,6 +14,7 @@ app.use(cookieParser());
       whitelist: true, 
       forbidNonWhitelisted: true, 
       transform: true, 
+      stopAtFirstError:true
     }),
   );
   
