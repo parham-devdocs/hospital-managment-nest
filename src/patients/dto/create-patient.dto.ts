@@ -18,6 +18,12 @@ import { BloodTypes } from "../type";
 
 
 export class CreatePatientDto {
+
+    @IsString()
+    @IsNotEmpty()
+    profileId:string
+
+    
     @IsString()
     @IsNotEmpty({ message: 'Illness is required' })
     @MaxLength(255, { message: 'Illness must not exceed 255 characters' })

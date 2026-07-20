@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthEntity } from './auth/entities/auth.entity';
 
 import { PatientsModule } from './patients/patients.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { PatientsModule } from './patients/patients.module';
         retryAttempts: 3,
         autoLoadEntities: true,
       })}),
-    PatientsModule
+    PatientsModule,
+    UserModule
   ], 
    controllers: [AppController],
   providers: [AppService],
