@@ -10,7 +10,7 @@ export class UserService {
 
     // ✅ Check if user exists
     userExists(id: string): Promise<boolean> {
-        return this.findUserService.exists(id);
+        return this.findUserService.userExists(id);
     }
 
     // ✅ Find all users

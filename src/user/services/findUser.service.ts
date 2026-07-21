@@ -54,7 +54,7 @@ export class FindUserService {
     }
 
     // ✅ Check if user exists
-    async exists(id: string): Promise<boolean> {
+    async userExists(id: string): Promise<boolean> {
         const count = await this.authRepo.count({
             where: { id }
         });
@@ -69,6 +69,7 @@ export class FindUserService {
         });
     }
 
+   
     // ✅ Find user and return formatted response
     async findUserProfile(id: string) {
         const user = await this.authRepo.findOne({
@@ -79,6 +80,8 @@ export class FindUserService {
         if (!user) {
             return null;
         }
+
+       
 
         return {
             id: user.id,

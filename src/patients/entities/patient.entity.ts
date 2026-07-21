@@ -24,7 +24,7 @@ export class PatientEntity {
   emergencyPhone: string;
 
   @Column({ type: "enum",enum:BloodTypes, nullable: true })
-  bloodType: BloodTypes;
+  bloodType: BloodTypes
 
   @Column({ type: "int", nullable: true })
   weight: number;

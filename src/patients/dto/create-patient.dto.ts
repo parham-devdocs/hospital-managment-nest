@@ -39,13 +39,11 @@ export class CreatePatientDto {
     @IsString({ each: true, message: 'Each allergy must be a string' })
     allergies: string[];
 
-    @IsArray({ message: 'Blood types must be an array' })
-    @ArrayNotEmpty({ message: 'At least one blood type is required' })
-    @IsEnum(BloodTypes, { 
+        @IsEnum(BloodTypes, { 
         each: true,
         message: 'Each blood type must be one of: A+, A-, B+, B-, AB+, AB-, O+, O-'
     })
-    bloodTypes: BloodTypes[];
+    bloodTypes: BloodTypes
 
     @IsString()
     @IsNotEmpty({ message: 'Emergency phone number is required' })
