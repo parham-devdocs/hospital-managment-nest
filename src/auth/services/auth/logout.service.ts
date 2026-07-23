@@ -1,14 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { AuthEntity } from "src/auth/entities/auth.entity";
+import { UserEntity } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
-import { JWTService } from "../jwt.service";
 
 @Injectable()
 export class LogoutService {
     constructor(
-        @InjectRepository(AuthEntity)
-        private authRepository: Repository<AuthEntity>,
+        @InjectRepository(UserEntity)
+        private authRepository: Repository<UserEntity>,
 
     ) {}
 

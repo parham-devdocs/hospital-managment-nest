@@ -1,6 +1,6 @@
-import { AuthEntity } from "src/auth/entities/auth.entity";
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { BloodTypes } from "../type";
+import { UserEntity } from "src/user/entities/user.entity";
 
 @Entity("patient")
 export class PatientEntity {
@@ -36,8 +36,8 @@ export class PatientEntity {
   isActive: boolean;
 
 
-  @OneToOne(() => AuthEntity, (auth) => auth.patient)
-  auth: AuthEntity;
+  @OneToOne(() => UserEntity, (user) => user.patient)
+  user: UserEntity;
 
 
   @CreateDateColumn()

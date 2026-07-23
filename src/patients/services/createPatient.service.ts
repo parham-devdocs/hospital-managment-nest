@@ -3,9 +3,9 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PatientEntity } from '../entities/patient.entity';
-import { AuthEntity } from '../../auth/entities/auth.entity';
 import { CreatePatientDto } from '../dto/create-patient.dto';
 import { UserService } from '../../user/services/user.service';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class CreatePatientService {
@@ -13,8 +13,8 @@ export class CreatePatientService {
         @InjectRepository(PatientEntity)
         private patientRepo: Repository<PatientEntity>,
         
-        @InjectRepository(AuthEntity) // ✅ Add Auth repository
-        private authRepo: Repository<AuthEntity>,
+        @InjectRepository(UserEntity) // ✅ Add Auth repository
+        private authRepo: Repository<UserEntity>,
         
         private userService: UserService,
     ) {}

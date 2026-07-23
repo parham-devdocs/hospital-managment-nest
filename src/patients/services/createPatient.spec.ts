@@ -1,7 +1,6 @@
 import { beforeEach, describe } from "node:test";
 import { PatientEntity } from "../entities/patient.entity";
 import { Repository } from "typeorm";
-import { AuthEntity } from "src/auth/entities/auth.entity";
 import { CreatePatientService } from "./createPatient.service";
 import { UserRole } from "src/auth/types";
 import { CreatePatientDto } from "../dto/create-patient.dto";
@@ -9,6 +8,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { BloodTypes } from "../type";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { NotFoundException, BadRequestException } from "@nestjs/common";
+import { UserEntity } from "src/user/entities/user.entity";
 
 // Create mock repositories
 const mockPatientRepository = {
@@ -61,7 +61,7 @@ describe("create patient - unit test", () => {
         updatedAt: new Date(),
     } as any;
 
-    const mockUser: AuthEntity = {
+    const mockUser: UserEntity = {
         id: '123e4567-e89b-12d3-a456-426614174000',
         email: 'test@example.com',
         fullName: 'John Doe',
@@ -97,7 +97,7 @@ describe("create patient - unit test", () => {
                     useValue: mockPatientRepository,
                 },
                 {
-                    provide: getRepositoryToken(AuthEntity),
+                    provide: getRepositoryToken(UserEntity),
                     useValue: mockAuthRepository,
                 },
             ],
@@ -105,7 +105,7 @@ describe("create patient - unit test", () => {
 
         service = module.get<CreatePatientService>(CreatePatientService);
         mockPatientRepo = module.get(getRepositoryToken(PatientEntity));
-        mockAuthRepo = module.get(getRepositoryToken(AuthEntity));
+        mockAuthRepo = module.get(getRepositoryToken(UserEntity));
     });
 
     it("should properly separate profileId from patient data", async () => {

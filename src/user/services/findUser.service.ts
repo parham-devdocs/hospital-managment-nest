@@ -1,33 +1,33 @@
 // auth/services/find-user.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthEntity } from 'src/auth/entities/auth.entity';
 import { UserRole } from 'src/auth/types';
 import { Repository } from 'typeorm';
+import { UserEntity } from '../entities/user.entity';
 
 @Injectable() // ✅ Add Injectable decorator
 export class FindUserService {
     constructor(
-        @InjectRepository(AuthEntity) // ✅ Decorator in constructor parameters
-        private authRepo: Repository<AuthEntity>, // ✅ Correct naming
+        @InjectRepository(UserEntity) // ✅ Decorator in constructor parameters
+        private authRepo: Repository<UserEntity>, // ✅ Correct naming
     ) {}
 
     // ✅ Find user by ID
-    async findById(id: string): Promise<AuthEntity | null> {
+    async findById(id: string): Promise<UserEntity | null> {
         return await this.authRepo.findOne({
             where: { id }
         });
     }
 
     // ✅ Find user by email
-    async findByEmail(email: string): Promise<AuthEntity | null> {
+    async findByEmail(email: string): Promise<UserEntity | null> {
         return await this.authRepo.findOne({
             where: { email }
         });
     }
 
     // ✅ Find user with relations
-    async findByIdWithRelations(id: string, relations: Record<string,string> = {}): Promise<AuthEntity | null> {
+    async findByIdWithRelations(id: string, relations: Record<string,string> = {}): Promise<UserEntity | null> {
         return await this.authRepo.findOne({
             where: { id },
             relations:{...relations} 
@@ -35,19 +35,19 @@ export class FindUserService {
     }
 
     // ✅ Find user by refresh token
-    async findByRefreshToken(refreshToken: string): Promise<AuthEntity | null> {
+    async findByRefreshToken(refreshToken: string): Promise<UserEntity | null> {
         return await this.authRepo.findOne({
             where: { refreshToken }
         });
     }
 
     // ✅ Find all users
-    async findAll(): Promise<AuthEntity[]> {
+    async findAll(): Promise<UserEntity[]> {
         return await this.authRepo.find();
     }
 
     // ✅ Find users by role
-    async findByRole(role: UserRole): Promise<AuthEntity[]> {
+    async findByRole(role: UserRole): Promise<UserEntity[]> {
         return await this.authRepo.find({
             where: { role }
         });
@@ -62,7 +62,7 @@ export class FindUserService {
     }
 
     // ✅ Find user with patient data
-    async findWithPatient(id:string): Promise<AuthEntity | null> {
+    async findWithPatient(id:string): Promise<UserEntity | null> {
         return await this.authRepo.findOne({
             where: { id },
             relations: {patient:true}

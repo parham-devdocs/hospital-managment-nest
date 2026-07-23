@@ -8,19 +8,23 @@ import {
   HttpStatus,
   NotFoundException,
   Get,
-  Param
+  Param,
+  Delete
 } from '@nestjs/common';
 import {type Response } from 'express';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { CreatePatientService } from './services/createPatient.service';
 import { FindUserService } from 'src/user/services/findUser.service';
+import { RemovePatientService } from './services/removePatient.service';
 
 @Controller('patient')
 
 export class PatientController {
   constructor(
       private readonly createPatientService: CreatePatientService,
-      private readonly findPatientService:FindUserService
+      private readonly findPatientService:FindUserService,
+      private readonly removePatientService:RemovePatientService
+
   ) {}
 
   @Post()
@@ -59,4 +63,8 @@ export class PatientController {
 return this.findPatientService.findById(id)
   }
 
+  @Delete("/:id")
+  async  removePatient(@Param("id") id:string) {
+    return this.removePatientService.remove(id)
+  }
 }

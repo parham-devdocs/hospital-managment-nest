@@ -2,16 +2,16 @@ import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { AuthEntity } from '../../entities/auth.entity';
 import { RegisterAuthDto } from 'src/auth/dto/register-auth.dto';
 import { JWTService } from '../jwt.service';
 import { RegisterServiceResponse } from 'src/auth/types';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class RegsiterService {
   constructor(
-    @InjectRepository(AuthEntity)
-    private authRepository: Repository<AuthEntity>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
     private dataSource: DataSource,
     private readonly jwtService: JWTService,
   ) {}
@@ -28,7 +28,7 @@ export class RegsiterService {
       avatar_url,
     } = signUpDto;
 
-    const existingUser = await this.authRepository.findOne({
+    const existingUser = await this.userRepository.findOne({
       where: { email },
     });
 
@@ -38,7 +38,7 @@ export class RegsiterService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = this.authRepository.create({
+    const newUser = this.userRepository.create({
       email,
       hashedPassword,
       fullName,
@@ -49,7 +49,7 @@ export class RegsiterService {
       gender,
     });
 
-    const savedUser = await this.authRepository.save(newUser);
+    const savedUser = await this.userRepository.save(newUser);
 
     const accessToken = await this.jwtService.generateToken(
       savedUser.id,

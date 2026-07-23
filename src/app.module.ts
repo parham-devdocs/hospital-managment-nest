@@ -4,12 +4,15 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthEntity } from './auth/entities/auth.entity';
 
 import { PatientsModule } from './patients/patients.module';
 import { UserModule } from './user/user.module';
 import { PatientEntity } from './patients/entities/patient.entity';
-import { CreatePatientService } from './patients/services/createPatient.service';
+import { UserEntity } from './user/entities/user.entity';
+import { DoctorModule } from './doctor/doctor.module';
+import { DoctorSpecialtyModule } from './doctor-specialty/doctor-specialty.module';
+import { SpecialtyEntity } from './doctor-specialty/entities/doctor-specialty.entity';
+import { DoctorEntity } from './doctor/entities/doctor.entity';
 
 @Module({
   imports: [
@@ -26,7 +29,7 @@ import { CreatePatientService } from './patients/services/createPatient.service'
         port: parseInt(configService.get('DB_PORT') as string),
         username: configService.get('DB_USERNAME') as string,
         password: configService.get('DB_PASSWORD') as string,
-        entities: [AuthEntity,PatientEntity],
+        entities: [UserEntity,PatientEntity,SpecialtyEntity,DoctorEntity],
         database: configService.get('DB') as string,
         synchronize: true,
         logger: 'advanced-console',
@@ -36,7 +39,9 @@ import { CreatePatientService } from './patients/services/createPatient.service'
         autoLoadEntities: true,
       })}),
     PatientsModule,
-    UserModule
+    UserModule,
+    DoctorModule,
+    DoctorSpecialtyModule
   ], 
    controllers: [AppController],
   providers: [AppService],

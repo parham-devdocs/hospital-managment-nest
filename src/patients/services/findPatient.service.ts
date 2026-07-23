@@ -3,7 +3,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like, Between, In } from 'typeorm';
 import { PatientEntity } from '../entities/patient.entity';
-import { CreatePatientDto } from '../dto/create-patient.dto';
 import { BloodTypes } from '../type';
 
 @Injectable()
@@ -27,7 +26,7 @@ export class FindPatientService {
 
     async findByUserId(userId: string): Promise<PatientEntity> {
         const patient = await this.patientRepo.findOne({ 
-            where: { auth:{id:userId} } 
+            where: { user:{id:userId} } 
         });
         if (!patient) {
             throw new NotFoundException(`Patient for user ID ${userId} not found`);
@@ -111,7 +110,7 @@ export class FindPatientService {
     async findWithUser(id: string): Promise<PatientEntity> {
         const patient = await this.patientRepo.findOne({
             where: { id },
-            relations: {auth:true}
+            relations: {user:true}
         });
         if (!patient) {
             throw new NotFoundException(`Patient with ID ${id} not found`);

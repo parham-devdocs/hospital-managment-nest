@@ -3,12 +3,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './services/user.service';
 import { FindUserService } from './services/findUser.service';
-import { AuthEntity } from '../auth/entities/auth.entity';
 import { PatientEntity } from '../patients/entities/patient.entity';
+import { UserEntity } from './entities/user.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([AuthEntity, PatientEntity]), // ✅ Register entities
+        TypeOrmModule.forFeature([UserEntity, PatientEntity]), // ✅ Register entities
     ],
     providers: [
         UserService,

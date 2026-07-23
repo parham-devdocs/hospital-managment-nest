@@ -3,16 +3,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FindUserService } from 'src/user/services/findUser.service';
-import { AuthEntity } from 'src/auth/entities/auth.entity';
 import { UserRole } from 'src/auth/types';
+import { UserEntity } from '../entities/user.entity';
 
 
 describe('FindUserService - Unit Tests', () => {
   let service: FindUserService;
-  let mockRepo: jest.Mocked<Repository<AuthEntity>>;
+  let mockRepo: jest.Mocked<Repository<UserEntity>>;
 
   // Mock data
-  const mockUser: AuthEntity = {
+  const mockUser: UserEntity = {
     id: '123e4567-e89b-12d3-a456-426614174000',
     email: 'test@example.com',
     fullName: 'John Doe',
@@ -36,7 +36,7 @@ describe('FindUserService - Unit Tests', () => {
       providers: [
         FindUserService,
         {
-          provide: getRepositoryToken(AuthEntity),
+          provide: getRepositoryToken(UserEntity),
           useValue: mockRepo,
         },
       ],
