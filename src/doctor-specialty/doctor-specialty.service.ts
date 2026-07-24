@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDoctorSpecialtyDto } from './dto/create-doctor-specialty.dto';
-import { UpdateDoctorSpecialtyDto } from './dto/update-doctor-specialty.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CreateDoctorSpecialtyDto } from "./dto/create-doctor-specialty.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { SpecialtyEntity } from "./entities/doctor-specialty.entity";
+import { Repository } from "typeorm";
+import { UpdateDoctorSpecialtyDto } from "./dto/update-doctor-specialty.dto";
+
 
 @Injectable()
-export class DoctorSpecialtyService {
-  create(createDoctorSpecialtyDto: CreateDoctorSpecialtyDto) {
-    return 'This action adds a new doctorSpecialty';
-  }
+export class DoctorSpecialtyService{
+    constructor(
+        @InjectRepository(SpecialtyEntity)
+        private doctorSpecialtyEntity: Repository<SpecialtyEntity>,
+    ){}
 
-  findAll() {
-    return `This action returns all doctorSpecialty`;
-  }
+  async  findDoctorSpecialty(id:string){
 
-  findOne(id: number) {
-    return `This action returns a #${id} doctorSpecialty`;
-  }
+        const doctorSpecialty=await this.doctorSpecialtyEntity.findOne({where:{id}})
+        if (!doctorSpecialty) {
+            throw new NotFoundException("no doctor specialty with this id exist")
+        }
+        return doctorSpecialty
+ 
+     }
 
-  update(id: number, updateDoctorSpecialtyDto: UpdateDoctorSpecialtyDto) {
-    return `This action updates a #${id} doctorSpecialty`;
-  }
+ async   createDoctorSpecialty(createDoctorSpecialtyDto:CreateDoctorSpecialtyDto){
 
-  remove(id: number) {
-    return `This action removes a #${id} doctorSpecialty`;
-  }
+       const doctorSpecialty= this.doctorSpecialtyEntity.create({name:createDoctorSpecialtyDto.name})
+       return await this.doctorSpecialtyEntity.save(doctorSpecialty);
+
+    }
+    async removeDoctorSpecialty(id: string) {
+         await this.findDoctorSpecialty(id)
+        
+        // Then delete
+        await this.doctorSpecialtyEntity.delete({ id });
+        return { message: "Doctor specialty deleted successfully" };
+    }
+
+    async updateDoctorSpecialty(id: string,updateDoctorSpecialty:UpdateDoctorSpecialtyDto) {
+        await this.findDoctorSpecialty(id)
+       
+       // Then delete
+       await this.doctorSpecialtyEntity.update({ id },updateDoctorSpecialty);
+       return { message: "Doctor specialty deleted successfully" };
+   }
 }

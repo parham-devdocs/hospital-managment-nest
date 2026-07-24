@@ -14,7 +14,7 @@ export class SpecialtyEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({name:"name",nullable:false})
+  @Column({name:"name",nullable:false,unique:true})
   name:string
   
 
