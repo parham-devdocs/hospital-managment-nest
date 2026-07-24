@@ -1,6 +1,5 @@
 import { IsArray, IsNotEmpty, IsNumber, IsString, ValidateNested } from "class-validator";
-import { Certification, EducationEntry, Specialty, WorkExperience } from "../types";
-import { Type } from "class-transformer";
+
 
 export class DoctorEducationDto {
 
@@ -14,7 +13,7 @@ export class DoctorEducationDto {
     graduationYear:number
 
     @IsNotEmpty()
-    @IsNumber()
+    @IsString()
     country:string
 
     @IsNotEmpty()

@@ -39,7 +39,7 @@ export class UserService {
     }
 
     findWithDoctor(id:string):Promise<UserEntity| null>{
-        return this.findWithDoctor(id)
+        return this.findUserService.findWithDoctor(id)
     }
 
     // ✅ Find user by role (FIXED: was "Roel")

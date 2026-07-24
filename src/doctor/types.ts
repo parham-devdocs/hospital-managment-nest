@@ -11,10 +11,8 @@ export interface EducationEntry {
     id?: string;
     hospital: string;
     position: string;
-    specialty: string;
     startDate: Date;
     endDate?: Date;
-    isCurrent: boolean;
     location: string;
     responsibilities?: string[];
   }
