@@ -38,6 +38,10 @@ export class UserService {
         return this.findUserService.findWithPatient(id);
     }
 
+    findWithDoctor(id:string):Promise<UserEntity| null>{
+        return this.findWithDoctor(id)
+    }
+
     // ✅ Find user by role (FIXED: was "Roel")
     findUserByRole(role: UserRole): Promise<UserEntity[]> {
         return this.findUserService.findByRole(role);
@@ -48,17 +52,5 @@ export class UserService {
         return this.findUserService.findUserProfile(id);
     }
 
-    async getUserWithPatient(id: string) {
-        const user = await this.findWithPatient(id);
-        if (!user) {
-            return null;
-        }
-        return {
-            id: user.id,
-            email: user.email,
-            fullName: user.fullName,
-            role: user.role,
-            patient: user.patient || null
-        };
-    }
+
 }

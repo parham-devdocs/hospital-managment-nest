@@ -29,7 +29,7 @@ import { DoctorEntity } from './doctor/entities/doctor.entity';
         port: parseInt(configService.get('DB_PORT') as string),
         username: configService.get('DB_USERNAME') as string,
         password: configService.get('DB_PASSWORD') as string,
-        entities: [UserEntity,PatientEntity,SpecialtyEntity,DoctorEntity],
+        entities: [UserEntity, PatientEntity, SpecialtyEntity, DoctorEntity],
         database: configService.get('DB') as string,
         synchronize: true,
         logger: 'advanced-console',
@@ -37,13 +37,14 @@ import { DoctorEntity } from './doctor/entities/doctor.entity';
         retryDelay: 1000,
         retryAttempts: 3,
         autoLoadEntities: true,
-      })}),
+      }),
+    }),
     PatientsModule,
     UserModule,
     DoctorModule,
-    DoctorSpecialtyModule
-  ], 
-   controllers: [AppController],
+    DoctorSpecialtyModule,
+  ],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

@@ -1,4 +1,5 @@
 import {
+  Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
@@ -10,6 +11,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { SpecialtyEntity } from '../../doctor-specialty/entities/doctor-specialty.entity';
+import { Certification, EducationEntry, WorkExperience } from '../types';
 
 @Entity('doctor')
 export class DoctorEntity {
@@ -26,6 +28,15 @@ export class DoctorEntity {
   })
   @JoinTable({ name: 'doctor-specialties' })
   specialties: SpecialtyEntity[] | null;
+
+  @Column({ type: 'jsonb', default: [] })
+  educations: EducationEntry[];
+
+  @Column({ type: 'jsonb', default: [] })
+  workExperiences: WorkExperience[];
+
+  @Column({ type: 'jsonb', default: [] })
+  certifications: Certification[];
 
   @CreateDateColumn()
   createdAt: Date;
