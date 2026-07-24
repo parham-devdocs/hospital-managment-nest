@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
@@ -21,14 +23,13 @@ export class DoctorController {
   }
 
   @Get()
-  findAll() {
-    return this.doctorService.findAll();
+  findAll(@Query("page") page:string,@Query("limit") limit:string) {
+    const pageNum = +page || 1;  
+    const limitNum = +limit || 10;
+    return this.doctorService.findAll(pageNum,limitNum);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.doctorService.findOne(+id);
-  }
+ 
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateDoctorDto: UpdateDoctorDto) {
