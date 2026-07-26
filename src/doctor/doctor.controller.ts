@@ -29,7 +29,11 @@ export class DoctorController {
     return this.doctorService.findAll(pageNum,limitNum);
   }
 
- 
+  @Get(":id")
+  findOne(@Param("id") id:string) {
+
+    return this.doctorService.findOne(id)
+  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateDoctorDto: UpdateDoctorDto) {
