@@ -11,6 +11,7 @@ import {
 import { CreateDoctorSpecialtyDto } from './dto/create-doctor-specialty.dto';
 import { UpdateDoctorSpecialtyDto } from './dto/update-doctor-specialty.dto';
 import { DoctorSpecialtyService } from './doctor-specialty.service';
+import { AddSpecialtyToDoctorDto } from './dto/add-specialty-to-doctor.dto';
 
 @Controller('doctor-specialty')
 export class DoctorSpecialtyController {
@@ -23,6 +24,11 @@ export class DoctorSpecialtyController {
     return this.doctorSpecialtyService.createDoctorSpecialty(
       createDoctorSpecialtyDto,
     );
+  }
+
+  @Post("/add-to-doctor")
+  addSpecialtyToDoctor(@Body() addSpecialtyToDoctorDto:AddSpecialtyToDoctorDto){
+   return this.doctorSpecialtyService.addSpecialtyToDoctor(addSpecialtyToDoctorDto) 
   }
 
   @Delete('/:id')

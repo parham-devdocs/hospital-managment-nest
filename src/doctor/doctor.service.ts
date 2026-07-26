@@ -10,6 +10,7 @@ import { DoctorEntity } from './entities/doctor.entity';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/services/user.service';
+import { DoctorWorkExperienceDto } from './dto/doctor-work-experience';
 
 @Injectable()
 export class DoctorService {
@@ -159,48 +160,108 @@ export class DoctorService {
   }
 
   async findOne(id: string) {
-    const doctor = await this.doctorRepository.find({
-      where: { id},
-      relations: { specialties: true },
+    // 1. پیدا کردن دکتر با specialties
+    const doctor = await this.doctorRepository.findOne({
+        where: { id },
+        relations: { specialties: true },
     });
-    const doctorsWithCounts = await this.doctorRepository
-    .createQueryBuilder('doctor')
-    .select('doctor.id', 'doctorId')
-    .addSelect("doctor.workExperiences","workExperiences")
-    .addSelect("doctor.educations","educations")
-    .addSelect("doctor.certifications","certifications")
-    .addSelect(
-      'COALESCE(jsonb_array_length(doctor.certifications), 0)',
-      'certificationCount',
-    )
-    .addSelect(
-      'COALESCE(jsonb_array_length(doctor.educations), 0)',
-      'educationCount',
-    )
-    .addSelect(
-      'COALESCE(jsonb_array_length(doctor.workExperiences), 0)',
-      'workExperienceCount',
-    )
-    .leftJoin('doctor.user', 'profile')
-    .addSelect('profile.id', 'userId')
-    .addSelect('profile.fullName', 'fullName')
-    .addSelect('profile.email', 'email')
-    .addSelect('profile.phoneNumber', 'phoneNumber')
-    .addSelect('profile.gender', 'gender')
-    .addSelect("profile.address","address")
-    .addSelect('profile.avatar_url', 'avatar_url')
-    .addSelect('profile.isActive', 'isActive')
-    .where('doctor.id= :id',{id})
-    .getRawMany();
 
-return doctorsWithCounts
+    if (!doctor) {
+        throw new NotFoundException(`Doctor with ID ${id} not found`);
+    }
+
+    // 2. گرفتن اطلاعات اضافی با QueryBuilder
+    const doctorsWithCount = await this.doctorRepository
+        .createQueryBuilder('doctor')
+        .leftJoin('doctor.user', 'user') 
+        .addSelect([
+            'user.id',
+            'user.fullName',
+            'user.email',
+            'user.phoneNumber',
+            'user.gender',
+            'user.address',
+            'user.avatar_url',
+            'user.isActive'
+        ])
+        .addSelect('doctor.educations', 'educations') 
+        .addSelect('doctor.workExperiences', 'workExperiences') 
+        .addSelect('doctor.certifications', 'certifications') 
+                .addSelect(
+            'COALESCE(jsonb_array_length(doctor.certifications), 0)',
+            'certificationCount'
+        )
+        .addSelect(
+            'COALESCE(jsonb_array_length(doctor.educations), 0)',
+            'educationCount'
+        )
+        .addSelect(
+            'COALESCE(jsonb_array_length(doctor.workExperiences), 0)',
+            'workExperienceCount'
+        )
+        .where('doctor.id = :id', { id })
+        .getOne(); 
+
+    return {
+        success: true,
+        status: 200,
+        data: {
+            id: doctor.id,
+            userId: doctor.user?.id,
+            fullName: doctor.user?.fullName,
+            email: doctor.user?.email,
+            phoneNumber: doctor.user?.phoneNumber,
+            gender: doctor.user?.gender,
+            address: doctor.user?.address,
+            avatarUrl: doctor.user?.avatar_url,
+            isActive: doctor.user?.isActive,
+            specialties: doctor.specialties || [],
+            educations: doctor.educations || [], 
+            workExperiences: doctor.workExperiences || [], 
+            certifications: doctor.certifications || [], 
+            certificationCount: doctor.certifications?.length || 0,
+            educationCount: doctor.educations?.length || 0,
+            workExperienceCount: doctor.workExperiences?.length || 0,
+            createdAt: doctor.createdAt,
+            updatedAt: doctor.updatedAt,
+        },
+    };
+}
+  async update(id: string, updateDoctorDto: UpdateDoctorDto) {
+    const doctorExists = await this.doctorRepository.findOne({
+      where: { id },
+    })
+
+    if (!doctorExists) {
+      throw new NotFoundException(`Doctor with ID ${id} does not exist`);
+    }
+    const updatedDoctor=await this.doctorRepository.update(id,updateDoctorDto)
+    if (updatedDoctor.affected) {
+      return {
+        statue:201,
+        message:"doctor updated successfully"
+      }
+    }
+  
   }
 
-  update(id: number, updateDoctorDto: UpdateDoctorDto) {
-    return `This action updates a #${id} doctor`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} doctor`;
+  async remove(id: string) {
+    // Check if doctor exists - use findOne, not find
+    const doctorExists = await this.doctorRepository.findOne({
+      where: { id },
+    });
+  
+    if (!doctorExists) {
+      throw new NotFoundException(`Doctor with ID ${id} does not exist`);
+    }
+  
+    // Perform the delete
+    await this.doctorRepository.delete(id);
+  
+    return {
+      success: true,
+      status: 200,
+      message: `Doctor with ID ${id} successfully deleted`,
+    };
   }
 }
