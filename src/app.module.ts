@@ -13,6 +13,7 @@ import { DoctorModule } from './doctor/doctor.module';
 import { DoctorSpecialtyModule } from './doctor-specialty/doctor-specialty.module';
 import { SpecialtyEntity } from './doctor-specialty/entities/doctor-specialty.entity';
 import { DoctorEntity } from './doctor/entities/doctor.entity';
+import { AvailableTimeModule } from './available_time/available_time.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { DoctorEntity } from './doctor/entities/doctor.entity';
     UserModule,
     DoctorModule,
     DoctorSpecialtyModule,
+    AvailableTimeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,69 +2,115 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DoctorEntity } from './entities/doctor.entity';
 import { Repository } from 'typeorm';
-import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/services/user.service';
-import { DoctorWorkExperienceDto } from './dto/doctor-work-experience';
+import { DoctorSpecialtyService } from 'src/doctor-specialty/doctor-specialty.service';
 
 @Injectable()
 export class DoctorService {
   constructor(
     @InjectRepository(DoctorEntity)
     private doctorRepository: Repository<DoctorEntity>,
-
     private userService: UserService,
+    private specialtyService: DoctorSpecialtyService,
   ) {}
+
   async create(createDoctorDto: CreateDoctorDto) {
-    const { certifications, workExperiences, educations, userId, specialties } =
-      createDoctorDto;
 
-    // ✅ Check if user exists and already has a doctor profile
-    const userWithDoctor = await this.userService.findWithDoctor(userId);
+    try {
+      const { 
+        certifications, 
+        workExperiences, 
+        educations, 
+        userId,
+        specialty
+      } = createDoctorDto;
 
-    // ✅ If user already has a doctor profile, throw an error
-    if (userWithDoctor?.doctor) {
-      throw new ConflictException('User already has a doctor profile');
-    }
+   
+      const userWithDoctor = await this.userService.findWithDoctor(userId);
+      
+  
+      if (userWithDoctor?.doctor) {
+        throw new ConflictException('User already has a doctor profile');
+      }
 
-    // ✅ Get the user (ensures user exists)
-    const user = await this.userService.findUserById(userId);
-    if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
-    }
+      const user = await this.userService.findUserById(userId);
+      
+  
+      if (!user) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
 
-    // ✅ Create the doctor entity
-    const newDoctor = this.doctorRepository.create({
-      user,
-      specialties,
-      educations,
-      workExperiences,
-      certifications,
-    });
+      let savedSpecialty: any = null;
+      
+      if (specialty) {
 
-    // ✅ Save the doctor
-    const savedDoctor = await this.doctorRepository.save(newDoctor);
+        const existingSpecialty = await this.specialtyService.findDoctorSpecialty({id:specialty.id,name:specialty.name});
 
-    // ✅ Return a formatted response
-    return {
-      status: 'success',
-      message: 'Doctor profile created successfully',
-      data: {
+        
+        if (existingSpecialty) {
+       
+          savedSpecialty = existingSpecialty
+        } else {
+
+          savedSpecialty = await this.specialtyService.createDoctorSpecialty(specialty);
+          
+   
+        }
+      } else {
+        console.log('⚠️ No specialty provided. Skipping specialty creation.');
+      }
+
+
+      const newDoctor = this.doctorRepository.create({
+        user,
+        specialties: savedSpecialty ? [savedSpecialty] : [],
+        educations: educations || [],
+        workExperiences: workExperiences || [],
+        certifications: certifications || [],
+      });
+
+ 
+      const savedDoctor = await this.doctorRepository.save(newDoctor);
+      
+      console.log('✅ Doctor saved successfully!');
+      console.log('📋 Saved doctor details:', {
         id: savedDoctor.id,
-        userId: savedDoctor.user.id,
-        specialties: savedDoctor.specialties,
-        educationCount: savedDoctor.educations?.length || 0,
-        experienceCount: savedDoctor.workExperiences?.length || 0,
-        certificationCount: savedDoctor.certifications?.length || 0,
+        userId: savedDoctor.user?.id,
+        specialtiesCount: savedDoctor.specialties?.length || 0,
+        educationsCount: savedDoctor.educations?.length || 0,
+        workExperiencesCount: savedDoctor.workExperiences?.length || 0,
+        certificationsCount: savedDoctor.certifications?.length || 0,
         createdAt: savedDoctor.createdAt,
-      },
-    };
-  }
+        updatedAt: savedDoctor.updatedAt
+      });
+
+      // 6. Return formatted response
+      console.log('🔵 [create] Finished successfully');
+      
+      return {
+        status: 'success',
+        message: 'Doctor profile created successfully',
+        data: savedDoctor,
+      };
+      
+    } catch (error) {
+ 
+      if (error instanceof ConflictException || error instanceof NotFoundException) {
+        throw error;
+      }
+      
+      throw new BadRequestException(
+        `Failed to create doctor: ${error.message}`
+      );
+    }
+}
 
   async findAll(pageNum: number, limitNum: number) {
     // 1. Calculate pagination

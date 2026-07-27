@@ -1,9 +1,10 @@
-import { IsArray, IsNotEmpty, IsString, ValidateNested } from "class-validator";
-import { Certification, EducationEntry, Specialty, WorkExperience } from "../types";
+import { IsArray, IsNotEmpty, IsObject, IsString, ValidateNested } from "class-validator";
+import { Certification, EducationEntry, WorkExperience } from "../types";
 import { Type } from "class-transformer";
 import { DoctorEducationDto } from "./doctor-education-dto";
 import { DoctorWorkExperienceDto } from "./doctor-work-experience";
 import { DoctorCertificationDto } from "./doctor-certification";
+import { SpecialtyEntity } from "src/doctor-specialty/entities/doctor-specialty.entity";
 
 export class CreateDoctorDto {
 
@@ -14,8 +15,8 @@ export class CreateDoctorDto {
     userId:string
     
     @IsNotEmpty()
-    @IsArray()
-    specialties:Specialty[]
+    @IsObject()
+    specialty:SpecialtyEntity
 
     @IsNotEmpty()
     @ValidateNested({each:true})

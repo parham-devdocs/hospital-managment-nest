@@ -31,10 +31,7 @@ export class DoctorSpecialtyController {
    return this.doctorSpecialtyService.addSpecialtyToDoctor(addSpecialtyToDoctorDto) 
   }
 
-  @Delete('/:id')
-  remove(@Param('id') id: string) {
-    return this.doctorSpecialtyService.removeDoctorSpecialty(id);
-  }
+  
   @Patch('/:id')
   update(
     @Param('id') id: string,
@@ -47,6 +44,6 @@ export class DoctorSpecialtyController {
   }
   @Get('/:id')
   get(@Param('id') id: string) {
-    return this.doctorSpecialtyService.findDoctorSpecialty(id);
+    return this.doctorSpecialtyService.findDoctorSpecialty({id});
   }
 }

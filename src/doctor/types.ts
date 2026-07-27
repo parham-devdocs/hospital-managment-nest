@@ -28,5 +28,4 @@ export interface EducationEntry {
 
   export interface Specialty{
     id?:string
-    name:string
   }

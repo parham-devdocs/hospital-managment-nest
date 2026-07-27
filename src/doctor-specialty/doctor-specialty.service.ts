@@ -17,17 +17,30 @@ export class DoctorSpecialtyService {
     ) {}
 
     // Find a single specialty
-    async findDoctorSpecialty(id: string) {
-        const doctorSpecialty = await this.doctorSpecialtyRepository.findOne({
-            where: { id }
-        });
-        
-        if (!doctorSpecialty) {
-            return null;
-        }
-        return doctorSpecialty;
-    }
+  // ✅ بهترین روش - استفاده از object parameter
+async findDoctorSpecialty(filter: { 
+    id?: string; 
+    name?: string;
+}) {
+    const queryBuilder = this.doctorSpecialtyRepository
+        .createQueryBuilder('specialty');
 
+    if (filter.id) {
+        queryBuilder.where('specialty.id = :id', { id: filter.id });
+    }
+    
+    if (filter.name) {
+        queryBuilder.where('specialty.name = :name', { name: filter.name });
+    }
+    
+
+
+    // اگر id یا name داشته باشیم، یک نتیجه برمی‌گردونه
+        return await queryBuilder.getOne();
+    
+    
+    // در غیر این صورت همه رو برمی‌گردونه
+}
     // Create a new specialty (standalone)
     async createDoctorSpecialty(createDoctorSpecialtyDto: CreateDoctorSpecialtyDto) {
         const doctorSpecialty = this.doctorSpecialtyRepository.create({
@@ -38,14 +51,14 @@ export class DoctorSpecialtyService {
 
     // Remove a specialty
     async removeDoctorSpecialty(id: string) {
-        await this.findDoctorSpecialty(id);
+        await this.findDoctorSpecialty({id});
         await this.doctorSpecialtyRepository.delete({ id });
         return { message: "Doctor specialty deleted successfully" };
     }
 
     // Update a specialty
     async updateDoctorSpecialty(id: string, updateDoctorSpecialty: UpdateDoctorSpecialtyDto) {
-        await this.findDoctorSpecialty(id);
+        await this.findDoctorSpecialty({id});
         await this.doctorSpecialtyRepository.update({ id }, updateDoctorSpecialty);
         return { message: "Doctor specialty updated successfully" };
     }
@@ -67,8 +80,8 @@ export class DoctorSpecialtyService {
 
             // 2. Check if specialty exists
             const doctorSpecialty = await this.findDoctorSpecialty(
-                addSpecialtyToDoctorDto.specialtyId
-            );
+               {id:addSpecialtyToDoctorDto.specialtyId} 
+            )
 
             if (!doctorSpecialty) {
                 throw new NotFoundException(
@@ -87,7 +100,7 @@ export class DoctorSpecialtyService {
 
             if (alreadyHasSpecialty) {
                 throw new ConflictException(
-                    `Doctor already has the specialty: ${doctorSpecialty.name}`
+                    `Doctor already has the specialty: ${doctorSpecialty}`
                 );
             }
 

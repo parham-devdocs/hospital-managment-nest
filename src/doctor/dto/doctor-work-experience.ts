@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsDateString,
   IsNotEmpty,
   IsString,
@@ -27,6 +28,6 @@ export class DoctorWorkExperienceDto {
   position: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsArray()
   responsibilities: string[];
 }
