@@ -14,6 +14,7 @@ import { DoctorSpecialtyModule } from './doctor-specialty/doctor-specialty.modul
 import { SpecialtyEntity } from './doctor-specialty/entities/doctor-specialty.entity';
 import { DoctorEntity } from './doctor/entities/doctor.entity';
 import { AvailableTimeModule } from './available_time/available_time.module';
+import { TimeAvailability } from './available_time/entities/available_time.entity';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { AvailableTimeModule } from './available_time/available_time.module';
         port: parseInt(configService.get('DB_PORT') as string),
         username: configService.get('DB_USERNAME') as string,
         password: configService.get('DB_PASSWORD') as string,
-        entities: [UserEntity, PatientEntity, SpecialtyEntity, DoctorEntity],
+        entities: [UserEntity, PatientEntity, SpecialtyEntity, DoctorEntity,TimeAvailability],
         database: configService.get('DB') as string,
         synchronize: true,
         logger: 'advanced-console',

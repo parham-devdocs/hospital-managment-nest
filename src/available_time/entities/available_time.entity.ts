@@ -7,10 +7,12 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('time-availability')
+@Unique(['date', 'time', 'doctor'])
 export class TimeAvailability {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -18,12 +20,12 @@ export class TimeAvailability {
   @Column({ type: 'date', nullable: false })
   date: Date;
 
-  @Column({ type: 'varchar', nullable: false }) 
+  @Column({ type: 'varchar', nullable: false })
   time: string;
 
   // Many-to-One: Many availabilities belong to one doctor
   @ManyToOne(() => DoctorEntity, (doctor) => doctor.availableTimes)
-  doctor: DoctorEntity; 
+  doctor: DoctorEntity;
 
   @CreateDateColumn()
   createdAt: Date;

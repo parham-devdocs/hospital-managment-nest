@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AvailableTimeController } from './available_time.controller';
-import { AvailableTimeService } from './available_time.service';
+import { AvailableTimeService } from './services/available_time.service';
 
 describe('AvailableTimeController', () => {
   let controller: AvailableTimeController;

@@ -1,5 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { AvailableTimeService } from './available_time.service';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseUUIDPipe,
+} from '@nestjs/common';
+import { AvailableTimeService } from './services/available_time.service';
 import { CreateAvailableTimeDto } from './dto/create-available_time.dto';
 import { UpdateAvailableTimeDto } from './dto/update-available_time.dto';
 
@@ -7,9 +16,12 @@ import { UpdateAvailableTimeDto } from './dto/update-available_time.dto';
 export class AvailableTimeController {
   constructor(private readonly availableTimeService: AvailableTimeService) {}
 
-  @Post()
-  create(@Body() createAvailableTimeDto: CreateAvailableTimeDto) {
-    return this.availableTimeService.create(createAvailableTimeDto);
+  @Post(":doctorId")
+  create(
+    @Body() createAvailableTimeDto: CreateAvailableTimeDto,
+    @Param('doctorId', ParseUUIDPipe) doctorId: string,
+  ) {
+    return this.availableTimeService.create(createAvailableTimeDto, doctorId);
   }
 
   @Get()
@@ -23,7 +35,10 @@ export class AvailableTimeController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAvailableTimeDto: UpdateAvailableTimeDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAvailableTimeDto: UpdateAvailableTimeDto,
+  ) {
     return this.availableTimeService.update(+id, updateAvailableTimeDto);
   }
 
