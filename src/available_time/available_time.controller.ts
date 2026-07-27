@@ -16,7 +16,7 @@ import { UpdateAvailableTimeDto } from './dto/update-available_time.dto';
 export class AvailableTimeController {
   constructor(private readonly availableTimeService: AvailableTimeService) {}
 
-  @Post(":doctorId")
+  @Post(':doctorId')
   create(
     @Body() createAvailableTimeDto: CreateAvailableTimeDto,
     @Param('doctorId', ParseUUIDPipe) doctorId: string,
@@ -24,26 +24,23 @@ export class AvailableTimeController {
     return this.availableTimeService.create(createAvailableTimeDto, doctorId);
   }
 
-  @Get()
-  findAll() {
-    return this.availableTimeService.findAll();
+  @Get(':doctorId')
+  findAllAvailableTimesOfDoctor(
+    @Param('doctorId', ParseUUIDPipe) doctorId: string,
+  ) {
+    return this.availableTimeService.findAllAvailableTimesOfDoctor(doctorId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.availableTimeService.findOne(+id);
-  }
-
-  @Patch(':id')
+  @Patch(':doctorId')
   update(
-    @Param('id') id: string,
+    @Param('doctorId') doctorId: string,
     @Body() updateAvailableTimeDto: UpdateAvailableTimeDto,
   ) {
-    return this.availableTimeService.update(+id, updateAvailableTimeDto);
+    return this.availableTimeService.update(updateAvailableTimeDto, doctorId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.availableTimeService.remove(+id);
+  @Delete(':doctorId')
+  remove(@Param('doctorId') doctorId: string) {
+    return this.availableTimeService.remove(doctorId);
   }
 }

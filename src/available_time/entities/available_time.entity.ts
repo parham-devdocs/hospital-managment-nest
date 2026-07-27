@@ -1,4 +1,4 @@
-// time-availability.entity.ts
+import { AppointmentEntity } from 'src/appointment/entities/appointment.entity';
 import { DoctorEntity } from 'src/doctor/entities/doctor.entity';
 import {
   Column,
@@ -6,6 +6,7 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
@@ -26,6 +27,9 @@ export class TimeAvailability {
   // Many-to-One: Many availabilities belong to one doctor
   @ManyToOne(() => DoctorEntity, (doctor) => doctor.availableTimes)
   doctor: DoctorEntity;
+
+  @OneToOne(()=>AppointmentEntity,(appointment)=>appointment.availableTime)
+  appointment:AppointmentEntity
 
   @CreateDateColumn()
   createdAt: Date;

@@ -15,6 +15,8 @@ import { SpecialtyEntity } from './doctor-specialty/entities/doctor-specialty.en
 import { DoctorEntity } from './doctor/entities/doctor.entity';
 import { AvailableTimeModule } from './available_time/available_time.module';
 import { TimeAvailability } from './available_time/entities/available_time.entity';
+import { AppointmentModule } from './appointment/appointment.module';
+import { AppointmentEntity } from './appointment/entities/appointment.entity';
 
 @Module({
   imports: [
@@ -26,12 +28,12 @@ import { TimeAvailability } from './available_time/entities/available_time.entit
       imports: [ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true })],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
+        type: "postgres",
         host: 'localhost',
         port: parseInt(configService.get('DB_PORT') as string),
         username: configService.get('DB_USERNAME') as string,
         password: configService.get('DB_PASSWORD') as string,
-        entities: [UserEntity, PatientEntity, SpecialtyEntity, DoctorEntity,TimeAvailability],
+        entities: [UserEntity, PatientEntity, SpecialtyEntity, DoctorEntity,TimeAvailability,AppointmentEntity],
         database: configService.get('DB') as string,
         synchronize: true,
         logger: 'advanced-console',
@@ -46,6 +48,7 @@ import { TimeAvailability } from './available_time/entities/available_time.entit
     DoctorModule,
     DoctorSpecialtyModule,
     AvailableTimeModule,
+    AppointmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

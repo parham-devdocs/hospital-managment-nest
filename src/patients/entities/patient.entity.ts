@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { BloodTypes } from "../type";
 import { UserEntity } from "src/user/entities/user.entity";
+import { AppointmentEntity } from "src/appointment/entities/appointment.entity";
 
 @Entity("patient")
 export class PatientEntity {
@@ -39,7 +40,11 @@ export class PatientEntity {
   @OneToOne(() => UserEntity, (user) => user.patient)
   user: UserEntity;
 
-
+ // ...
+@OneToMany(() => AppointmentEntity, (appointment) => appointment.patient)
+appointments: AppointmentEntity[];
+// ...
+  
   @CreateDateColumn()
   createdAt: Date;
 
