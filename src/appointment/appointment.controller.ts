@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { StringToDatePipe } from 'src/pipes/stringToDate.pipe';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -12,14 +13,13 @@ export class AppointmentController {
     return this.appointmentService.create(createAppointmentDto);
   }
 
-  @Get()
-  findAll() {
-    return this.appointmentService.findAll();
+  @Get('/doctor/:doctorId')
+  findAppointmentsOfDoctor(@Param('doctorId') doctorId: string, @Query("from",StringToDatePipe) from:Date , @Query("to",StringToDatePipe) to:Date ) {
+    return this.appointmentService.findAppointmentsOfDoctor(doctorId,from,to);
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.appointmentService.findOne(+id);
+  @Get()
+  findAllAppointments( @Query("from",StringToDatePipe) from:Date , @Query("to",StringToDatePipe) to:Date ) {
+    return this.appointmentService.findAllAppointments(from,to);
   }
 
   @Patch(':id')

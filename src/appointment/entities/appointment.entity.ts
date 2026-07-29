@@ -10,6 +10,9 @@ export class AppointmentEntity {
   @ManyToOne(() => PatientEntity, (patient) => patient.appointments)
   patient: PatientEntity;
 
+  @Column({nullable:false,type:"varchar"})
+  description:string
+
   @OneToOne(() => TimeAvailability, (timeAvailability) => timeAvailability.appointment,{cascade:true})
   availableTime: TimeAvailability;
 

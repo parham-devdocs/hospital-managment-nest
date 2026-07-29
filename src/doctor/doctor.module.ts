@@ -10,7 +10,7 @@ import { SpecialtyEntity } from 'src/doctor-specialty/entities/doctor-specialty.
 @Module({
   imports: [
     TypeOrmModule.forFeature([DoctorEntity,SpecialtyEntity]), // ✅ Register entities
-    UserModule,
+    UserModule
   ],
   controllers: [DoctorController],
   providers: [DoctorService,DoctorSpecialtyService],

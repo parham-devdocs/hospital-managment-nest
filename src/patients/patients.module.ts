@@ -17,6 +17,6 @@ import { RemovePatientService } from './services/removePatient.service';
   ],
   controllers: [PatientController],
   providers: [CreatePatientService,FindPatientService,RemovePatientService],
-  exports: [CreatePatientService],
+  exports: [CreatePatientService,FindPatientService],
 })
 export class PatientsModule {}

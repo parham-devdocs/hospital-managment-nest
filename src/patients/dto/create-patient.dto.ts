@@ -39,11 +39,12 @@ export class CreatePatientDto {
     @IsString({ each: true, message: 'Each allergy must be a string' })
     allergies: string[];
 
-        @IsEnum(BloodTypes, { 
+    @IsEnum(BloodTypes, { 
         each: true,
         message: 'Each blood type must be one of: A+, A-, B+, B-, AB+, AB-, O+, O-'
     })
-    bloodTypes: BloodTypes
+    @IsNotEmpty()
+    bloodType: BloodTypes
 
     @IsString()
     @IsNotEmpty({ message: 'Emergency phone number is required' })

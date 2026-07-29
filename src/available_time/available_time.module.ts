@@ -14,5 +14,6 @@ import { DoctorModule } from 'src/doctor/doctor.module'; // ✅ Import DoctorMod
   ],
   controllers: [AvailableTimeController],
   providers: [AvailableTimeService, TimeHelper], // ✅ Remove DoctorService from providers
+  exports:[AvailableTimeService]
 })
 export class AvailableTimeModule {}

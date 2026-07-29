@@ -80,9 +80,6 @@ export class AvailableTimeService {
       throw new NotFoundException('doctor does not exist');
     }
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
 
     const availableTimes = await this.timeAvailibilityRepo.find({
       where: { date: MoreThan(now), doctor: { id: doctorId } },
@@ -130,4 +127,62 @@ return {
   message:removedDoctor.message
 }
   }
+  async findOne(availabilityId: string) {
+    // Find the time availability by ID with relations
+    const availability = await this.timeAvailibilityRepo.findOne({
+        where: { id: availabilityId },
+        relations: {
+            doctor: {
+                user: true
+            },
+            appointment: true // Include appointment to check if booked
+        }
+    });
+
+    if (!availability) {
+        throw new NotFoundException(`Time availability with ID ${availabilityId} not found`);
+    }
+
+    return {
+        success: true,
+        statusCode: 200,
+        data: {
+            id: availability.id,
+            date: availability.date,
+            time: availability.time,
+            doctorId: availability.doctor?.id,
+            doctorName: availability.doctor?.user?.fullName || 'N/A',
+            isBooked: !!availability.appointment,
+            appointmentId: availability.appointment?.id || null,
+            createdAt: availability.createdAt,
+            updatedAt: availability.updatedAt,
+        }
+    };
+}
+
+
+async getIsBooked(availabilityId: string) {
+    // Fetch just the appointment relation to check if booked
+    const availability = await this.timeAvailibilityRepo.findOne({
+        where: { id: availabilityId },
+        relations: {appointment:true} // Only load appointment to check booking status
+    });
+
+    if (!availability) {
+        throw new NotFoundException(`Time availability with ID ${availabilityId} not found`);
+    }
+
+    const isBooked = !!availability.appointment;
+
+    return {
+        success: true,
+        statusCode: 200,
+        data: {
+            availabilityId: availabilityId,
+            isBooked: isBooked,
+            appointmentId: availability.appointment?.id || null,
+            bookedBy: availability.appointment?.patient?.id || null, // If you want patient info
+        }
+    };
+}
 }

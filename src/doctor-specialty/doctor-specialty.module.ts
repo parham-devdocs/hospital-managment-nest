@@ -11,5 +11,6 @@ import { DoctorEntity } from 'src/doctor/entities/doctor.entity';
 ],
   controllers: [DoctorSpecialtyController],
   providers: [DoctorSpecialtyService],
+  exports:[DoctorSpecialtyService]
 })
 export class DoctorSpecialtyModule {}

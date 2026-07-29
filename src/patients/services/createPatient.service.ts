@@ -44,7 +44,7 @@ export class CreatePatientService {
         patient.illness = patientData.illness;
         patient.medical_condition_summary = patientData.medical_condition_summary;
         patient.allergies = patientData.allergies;
-        patient.bloodType = patientData.bloodTypes; // ✅ Match entity field name
+        patient.bloodType = patientData.bloodType; // ✅ Match entity field name
         patient.emergencyPhone = patientData.emergency_phone; // ✅ Match entity field name
         patient.weight = patientData.weight;
         patient.height = patientData.height;

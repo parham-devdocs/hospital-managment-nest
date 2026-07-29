@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -26,10 +27,20 @@ export class TimeAvailability {
 
   // Many-to-One: Many availabilities belong to one doctor
   @ManyToOne(() => DoctorEntity, (doctor) => doctor.availableTimes)
+  @JoinColumn({ name: 'doctorId' }) // ← Good practice: explicit FK name
   doctor: DoctorEntity;
 
-  @OneToOne(()=>AppointmentEntity,(appointment)=>appointment.availableTime)
-  appointment:AppointmentEntity
+  @Column({ type: 'uuid', nullable: false })
+  doctorId: string; // ← Add this for direct access
+
+  // ✅ FIXED: One-to-One with Appointment
+  @OneToOne(() => AppointmentEntity, (appointment) => appointment.availableTime)
+  @JoinColumn({ name: 'appointmentId' }) // ← FIX: Attach to the decorator!
+  appointment: AppointmentEntity;
+
+  // ✅ FIXED: Correct type - string, not AppointmentEntity
+  @Column({ type: 'uuid', nullable: true })
+  appointmentId: string; // ← This stores the FK as a UUID string
 
   @CreateDateColumn()
   createdAt: Date;
