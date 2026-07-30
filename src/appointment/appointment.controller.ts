@@ -1,8 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { StringToDatePipe } from 'src/pipes/stringToDate.pipe';
+import { AppointmentQueryDto } from './dto/find-appointment-query.dto';
 
 @Controller('appointment')
 export class AppointmentController {
@@ -13,17 +24,18 @@ export class AppointmentController {
     return this.appointmentService.create(createAppointmentDto);
   }
 
-  @Get('/doctor/:doctorId')
-  findAppointmentsOfDoctor(@Param('doctorId') doctorId: string, @Query("from",StringToDatePipe) from:Date , @Query("to",StringToDatePipe) to:Date ) {
-    return this.appointmentService.findAppointmentsOfDoctor(doctorId,from,to);
-  }
   @Get()
-  findAllAppointments( @Query("from",StringToDatePipe) from:Date , @Query("to",StringToDatePipe) to:Date ) {
-    return this.appointmentService.findAllAppointments(from,to);
+  findAllAppointments(
+    @Query(ValidationPipe) query: any  ) {
+      const {to,from,sortBy,status,doctorId,limit,page,order}=query
+    return this.appointmentService.findAllAppointments(from, to,sortBy,status,doctorId,limit,page,order);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAppointmentDto: UpdateAppointmentDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateAppointmentDto: UpdateAppointmentDto,
+  ) {
     return this.appointmentService.update(id, updateAppointmentDto);
   }
 

@@ -1,5 +1,6 @@
 // create-appointment.dto.ts
-import { IsUUID, IsString } from 'class-validator';
+import { IsUUID, IsString, IsEnum, IsOptional } from 'class-validator';
+import { AppointmentStatus } from '../types';
 
 export class CreateAppointmentDto {
   @IsUUID()
@@ -9,5 +10,9 @@ export class CreateAppointmentDto {
   availableTimeId: string;
 
   @IsString()
-  description: string; 
+  description: string;
+
+  @IsOptional()
+  @IsEnum(AppointmentStatus)
+  appointmentStatus: AppointmentStatus = AppointmentStatus.PENDING; // ✅ Default value
 }

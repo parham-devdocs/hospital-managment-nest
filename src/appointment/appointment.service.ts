@@ -12,6 +12,7 @@ import { Between, LessThan, Repository } from 'typeorm';
 import { FindPatientService } from 'src/patients/services/findPatient.service';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { AvailableTimeService } from 'src/available_time/services/available_time.service';
+import { AppointmentStatus } from './types';
 
 @Injectable()
 export class AppointmentService {
@@ -81,83 +82,80 @@ export class AppointmentService {
         id: appointmentWithRelations?.id,
         description: appointmentWithRelations?.description,
         createdAt: appointmentWithRelations?.createdAt,
-        patientName: appointmentWithRelations?.patient?.user?.fullName || 'Unknown',
-        doctorName: appointmentWithRelations?.availableTime?.doctor?.user?.fullName || 'Unknown',
-        date: appointmentWithRelations?.availableTime?.date
+        patientName:
+          appointmentWithRelations?.patient?.user?.fullName || 'Unknown',
+        doctorName:
+          appointmentWithRelations?.availableTime?.doctor?.user?.fullName ||
+          'Unknown',
+        date: appointmentWithRelations?.availableTime?.date,
       },
     };
   }
 
-  // ==================== FIND BY DOCTOR ====================
-  async findAppointmentsOfDoctor(doctorId: string, from: Date, to: Date) {
-    // Validate doctor exists
-    const doctorExists = await this.doctorService.findOne(doctorId);
-    if (!doctorExists) {
-      throw new NotFoundException(`Doctor with ID ${doctorId} not found`);
-    }
-
-    // Validate dates
-    if (from > to) {
-      throw new BadRequestException('From date must be before to date');
-    }
-
-    const appointments = await this.appointmentRepo
-      .createQueryBuilder('appointment')
-      .leftJoin('appointment.availableTime', 'availableTime')
-      .leftJoin('availableTime.doctor', 'doctor')
-      .leftJoin('doctor.user', 'doctorUser')
-      .leftJoin('appointment.patient', 'patient')
-      .leftJoin('patient.user', 'patientUser')
-      .where('doctor.id = :doctorId', { doctorId })
-      .andWhere('availableTime.date BETWEEN :from AND :to', { from, to })
-      .select([
-        'appointment.id AS id',
-        'appointment.description AS description',
-        'appointment.createdAt AS createdAt',
-        'availableTime.id AS availableTimeId',
-        'availableTime.date AS date',
-        'doctor.id AS doctorId',
-        'doctorUser.fullName AS doctorName',
-        'patient.id AS patientId',
-        'patientUser.fullName AS patientName',
-      ])
-      .orderBy('availableTime.date', 'ASC')
-      .getRawMany();
-
-    return {
-      statusCode: 200,
-      success: true,
-      message: appointments.length > 0 
-        ? 'Appointments retrieved successfully' 
-        : 'No appointments found in this date range',
-      data: appointments,
-      total: appointments.length,
-      filters: {
-        doctorId,
-        from: from.toISOString().split('T')[0],
-        to: to.toISOString().split('T')[0],
-      },
-    };
-  }
 
   // ==================== FIND ALL APPOINTMENTS ====================
-  async findAllAppointments(from: Date, to: Date) {
+  async findAllAppointments(
+    from: Date,
+    to: Date,
+    sortBy: string = 'date', // Changed: string, not AppointmentEntity
+    status?: AppointmentStatus,
+    doctorId?: string,
+    limit: number = 10,
+    page: number = 1,
+    order: 'ASC' | 'DESC' = 'ASC', // Added default value
+  ) {
     // Validate dates
     if (from > to) {
       throw new BadRequestException('From date must be before to date');
     }
 
-    const appointments = await this.appointmentRepo
+    const skip = (page - 1) * limit;
+
+    const queryBuilder = this.appointmentRepo
       .createQueryBuilder('appointment')
       .leftJoin('appointment.availableTime', 'availableTime')
       .leftJoin('availableTime.doctor', 'doctor')
       .leftJoin('doctor.user', 'doctorUser')
       .leftJoin('appointment.patient', 'patient')
       .leftJoin('patient.user', 'patientUser')
-      .where('availableTime.date BETWEEN :from AND :to', { from, to })
+      // ✅ FIX 1: Use andWhere() for multiple conditions
+      .where('availableTime.date BETWEEN :from AND :to', { from, to });
+
+    if (status) {
+      queryBuilder.andWhere('appointment.status = :status', { status });
+    }
+
+    if (doctorId) {
+      queryBuilder.andWhere('doctor.id = :doctorId', { doctorId });
+    }
+
+    const sortFieldMap: Record<string, string> = {
+      date: 'availableTime.date',
+      startTime: 'availableTime.startTime',
+      endTime: 'availableTime.endTime',
+      createdAt: 'appointment.createdAt',
+      updatedAt: 'appointment.updatedAt',
+      status: 'appointment.status',
+      doctorName: 'doctorUser.fullName',
+      patientName: 'patientUser.fullName',
+      description: 'appointment.description',
+      id: 'appointment.id',
+    };
+
+    const sortField = sortFieldMap[sortBy] || 'availableTime.date';
+    queryBuilder.orderBy(sortField, order);
+
+    if (sortField !== 'appointment.id') {
+      queryBuilder.addOrderBy('appointment.id', order);
+    }
+
+    queryBuilder.skip(skip).take(limit);
+
+    const appointments = await queryBuilder
       .select([
         'appointment.id AS id',
         'appointment.description AS description',
+        'appointment.status AS status',
         'appointment.createdAt AS createdAt',
         'availableTime.id AS availableTimeId',
         'availableTime.date AS date',
@@ -166,20 +164,47 @@ export class AppointmentService {
         'patient.id AS patientId',
         'patientUser.fullName AS patientName',
       ])
-      .orderBy('availableTime.date', 'ASC')
       .getRawMany();
+
+    const totalQueryBuilder = this.appointmentRepo
+      .createQueryBuilder('appointment')
+      .leftJoin('appointment.availableTime', 'availableTime')
+      .leftJoin('availableTime.doctor', 'doctor')
+      .where('availableTime.date BETWEEN :from AND :to', { from, to });
+
+    if (status) {
+      totalQueryBuilder.andWhere('appointment.status = :status', { status });
+    }
+
+    if (doctorId) {
+      totalQueryBuilder.andWhere('doctor.id = :doctorId', { doctorId });
+    }
+
+    const total = await totalQueryBuilder.getCount();
 
     return {
       statusCode: 200,
       success: true,
-      message: appointments.length > 0 
-        ? 'Appointments retrieved successfully' 
-        : 'No appointments found in this date range',
+      message:
+        appointments.length > 0
+          ? 'Appointments retrieved successfully'
+          : 'No appointments found in this date range',
       data: appointments,
-      total: appointments.length,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      sorting: {
+        sortBy,
+        order,
+      },
       filters: {
-        from: from.toISOString().split('T')[0],
-        to: to.toISOString().split('T')[0],
+        from,
+        to,
+        status: status || null,
+        doctorId: doctorId || null,
       },
     };
   }
@@ -205,9 +230,9 @@ export class AppointmentService {
       createdAt: appointment?.createdAt,
       updatedAt: appointment?.updatedAt,
       patientName: appointment?.patient?.user?.fullName || 'Unknown',
-      doctorName: appointment?.availableTime?.doctor?.user?.fullName || 'Unknown',
+      doctorName:
+        appointment?.availableTime?.doctor?.user?.fullName || 'Unknown',
       date: appointment?.availableTime?.date,
-   
     };
   }
 
@@ -266,11 +291,11 @@ export class AppointmentService {
 
     // 4. Update appointment
     await this.appointmentRepo.update(id, {
-      patient: updateAppointmentDto.patientId 
-        ? { id: updateAppointmentDto.patientId } 
+      patient: updateAppointmentDto.patientId
+        ? { id: updateAppointmentDto.patientId }
         : undefined,
-      availableTime: updateAppointmentDto.availableTimeId 
-        ? { id: updateAppointmentDto.availableTimeId } 
+      availableTime: updateAppointmentDto.availableTimeId
+        ? { id: updateAppointmentDto.availableTimeId }
         : undefined,
       description: updateAppointmentDto.description,
     });
@@ -311,6 +336,4 @@ export class AppointmentService {
 
     throw new NotFoundException(`Failed to delete appointment with ID ${id}`);
   }
-
-
 }

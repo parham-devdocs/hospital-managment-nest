@@ -8,7 +8,7 @@ import { CreateAvailableTimeDto } from '../dto/create-available_time.dto';
 import { UpdateAvailableTimeDto } from '../dto/update-available_time.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TimeAvailability } from '../entities/available_time.entity';
-import { MoreThan, Repository } from 'typeorm';
+import { IsNull, MoreThan, Repository } from 'typeorm';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { TimeHelper } from './timeHelper.service';
 
@@ -74,7 +74,7 @@ export class AvailableTimeService {
     }
   }
 
-  async findAllAvailableTimesOfDoctor(doctorId) {
+  async findAllAvailableTimesOfDoctor(doctorId:string) {
     const doctorExists = await this.doctorService.findOne(doctorId);
     if (!doctorExists) {
       throw new NotFoundException('doctor does not exist');
@@ -82,7 +82,7 @@ export class AvailableTimeService {
     const now = new Date();
 
     const availableTimes = await this.timeAvailibilityRepo.find({
-      where: { date: MoreThan(now), doctor: { id: doctorId } },
+      where: { date: MoreThan(now), doctor: { id: doctorId },appointmentId:IsNull() },
     });
 
     return { availableTimes };
