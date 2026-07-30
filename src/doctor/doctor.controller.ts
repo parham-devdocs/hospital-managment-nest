@@ -8,10 +8,12 @@ import {
   Delete,
   ParseIntPipe,
   Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
+import { FindDoctorQueryDto } from './dto/find-doctors-query';
 
 @Controller('doctor')
 export class DoctorController {
@@ -23,10 +25,10 @@ export class DoctorController {
   }
 
   @Get()
-  findAll(@Query("page") page:string,@Query("limit") limit:string,@Query("specialties") specialties?:string[],@Query("fullName") fullName?:string,@Query("isActive") isActive?:boolean) {
-    const pageNum = +page || 1;  
-    const limitNum = +limit || 10;
-    return this.doctorService.findAll(pageNum,limitNum,specialties,fullName,isActive);
+  findAll( @Query(ValidationPipe) findDoctorsQueries: FindDoctorQueryDto ) {
+    const pageNum = findDoctorsQueries.page || 1;  
+    const limitNum = findDoctorsQueries.limit || 10;
+    return this.doctorService.findAll(pageNum,limitNum,findDoctorsQueries.specialties,findDoctorsQueries.fullName,findDoctorsQueries.isActive);
   }
 
   @Get(":id")
