@@ -23,10 +23,10 @@ export class DoctorController {
   }
 
   @Get()
-  findAll(@Query("page") page:string,@Query("limit") limit:string) {
+  findAll(@Query("page") page:string,@Query("limit") limit:string,@Query("specialties") specialties?:string[],@Query("fullName") fullName?:string,@Query("isActive") isActive?:boolean) {
     const pageNum = +page || 1;  
     const limitNum = +limit || 10;
-    return this.doctorService.findAll(pageNum,limitNum);
+    return this.doctorService.findAll(pageNum,limitNum,specialties,fullName,isActive);
   }
 
   @Get(":id")

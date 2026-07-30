@@ -16,8 +16,6 @@ export class DoctorSpecialtyService {
         private doctorRepository: Repository<DoctorEntity>
     ) {}
 
-    // Find a single specialty
-  // ✅ بهترین روش - استفاده از object parameter
 async findDoctorSpecialty(filter: { 
     id?: string; 
     name?: string;
@@ -35,13 +33,10 @@ async findDoctorSpecialty(filter: {
     
 
 
-    // اگر id یا name داشته باشیم، یک نتیجه برمی‌گردونه
         return await queryBuilder.getOne();
     
     
-    // در غیر این صورت همه رو برمی‌گردونه
 }
-    // Create a new specialty (standalone)
     async createDoctorSpecialty(createDoctorSpecialtyDto: CreateDoctorSpecialtyDto) {
         const doctorSpecialty = this.doctorSpecialtyRepository.create({
             name: createDoctorSpecialtyDto.name
