@@ -3,6 +3,8 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
+  Inject,
 } from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
@@ -13,6 +15,9 @@ import { FindPatientService } from 'src/patients/services/findPatient.service';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { AvailableTimeService } from 'src/available_time/services/available_time.service';
 import { AppointmentStatus } from './types';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import {type Cache } from 'cache-manager';
+import { AppointmentQueryDto } from './dto/find-appointment-query.dto';
 
 @Injectable()
 export class AppointmentService {
@@ -21,7 +26,9 @@ export class AppointmentService {
     private appointmentRepo: Repository<AppointmentEntity>,
     private readonly findPatientService: FindPatientService,
     private readonly availableTimeService: AvailableTimeService,
-    private readonly doctorService: DoctorService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+
+
   ) {}
 
   // ==================== CREATE ====================
@@ -95,15 +102,17 @@ export class AppointmentService {
 
   // ==================== FIND ALL APPOINTMENTS ====================
   async findAllAppointments(
-    from: Date,
-    to: Date,
-    sortBy: string = 'date', // Changed: string, not AppointmentEntity
-    status?: AppointmentStatus,
-    doctorId?: string,
-    limit: number = 10,
-    page: number = 1,
-    order: 'ASC' | 'DESC' = 'ASC', // Added default value
+   { from,
+    to,
+    sortBy = 'date', // Changed: string, not AppointmentEntity
+    status,
+    doctorId,
+    patientId,
+    limit=10,
+    page = 1,
+    order = 'ASC'}:AppointmentQueryDto
   ) {
+    console.log('🔥 EXECUTING METHOD - NOT FROM CACHE');
     // Validate dates
     if (from > to) {
       throw new BadRequestException('From date must be before to date');
@@ -116,6 +125,7 @@ export class AppointmentService {
       .leftJoin('appointment.availableTime', 'availableTime')
       .leftJoin('availableTime.doctor', 'doctor')
       .leftJoin('doctor.user', 'doctorUser')
+
       .leftJoin('appointment.patient', 'patient')
       .leftJoin('patient.user', 'patientUser')
       // ✅ FIX 1: Use andWhere() for multiple conditions
@@ -127,6 +137,9 @@ export class AppointmentService {
 
     if (doctorId) {
       queryBuilder.andWhere('doctor.id = :doctorId', { doctorId });
+    }
+    if (patientId) {
+      queryBuilder.andWhere('patient.id = :patientId', {patientId });
     }
 
     const sortFieldMap: Record<string, string> = {
@@ -181,6 +194,8 @@ export class AppointmentService {
     }
 
     const total = await totalQueryBuilder.getCount();
+    console.log(`✅ Query executed, returning ${total} results`);
+
 
     return {
       statusCode: 200,

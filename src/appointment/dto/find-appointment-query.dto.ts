@@ -11,7 +11,7 @@ import {
     ValidateIf,
     IsNotEmpty,
   } from 'class-validator';
-  import { Type, Transform } from 'class-transformer';
+  import { Transform } from 'class-transformer';
 import { AppointmentStatus } from '../types';
   
 

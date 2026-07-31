@@ -12,7 +12,6 @@ import {
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { StringToDatePipe } from 'src/pipes/stringToDate.pipe';
 import { AppointmentQueryDto } from './dto/find-appointment-query.dto';
 
 @Controller('appointment')
@@ -25,10 +24,12 @@ export class AppointmentController {
   }
 
   @Get()
-  findAllAppointments(
-    @Query(ValidationPipe) query: any  ) {
-      const {to,from,sortBy,status,doctorId,limit,page,order}=query
-    return this.appointmentService.findAllAppointments(from, to,sortBy,status,doctorId,limit,page,order);
+  findAllAppointments(@Query(ValidationPipe) query: AppointmentQueryDto) {
+    const { to, from, sortBy, status, doctorId,patientId, limit, page, order } = query;
+
+    return this.appointmentService.findAllAppointments(
+    {from,to,sortBy,status,doctorId,limit,order,page,patientId}
+    );
   }
 
   @Patch(':id')
