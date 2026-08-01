@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AvailableTimeService } from './services/available_time.service';
 import { CreateAvailableTimeDto } from './dto/create-available_time.dto';
 import { UpdateAvailableTimeDto } from './dto/update-available_time.dto';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
+@UseInterceptors(CacheInterceptor) 
 @Controller('available-time')
 export class AvailableTimeController {
   constructor(private readonly availableTimeService: AvailableTimeService) {}
@@ -25,6 +28,8 @@ export class AvailableTimeController {
   }
 
   @Get(':doctorId')
+  @CacheKey('available-times') 
+  @CacheTTL(10000) 
   findAllAvailableTimesOfDoctor(
     @Param('doctorId', ParseUUIDPipe) doctorId: string,
   ) {

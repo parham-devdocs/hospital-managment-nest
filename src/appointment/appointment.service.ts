@@ -104,7 +104,7 @@ export class AppointmentService {
   async findAllAppointments(
    { from,
     to,
-    sortBy = 'date', // Changed: string, not AppointmentEntity
+    sortBy = 'date', 
     status,
     doctorId,
     patientId,
@@ -112,8 +112,7 @@ export class AppointmentService {
     page = 1,
     order = 'ASC'}:AppointmentQueryDto
   ) {
-    console.log('🔥 EXECUTING METHOD - NOT FROM CACHE');
-    // Validate dates
+
     if (from > to) {
       throw new BadRequestException('From date must be before to date');
     }

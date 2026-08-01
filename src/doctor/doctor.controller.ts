@@ -9,11 +9,14 @@ import {
   ParseIntPipe,
   Query,
   ValidationPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { FindDoctorQueryDto } from './dto/find-doctors-query';
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import { IdCacheInterceptor } from './interceptors/id-cache.interceptor';
 
 @Controller('doctor')
 export class DoctorController {
@@ -32,6 +35,9 @@ export class DoctorController {
   }
 
   @Get(":id")
+  @UseInterceptors(IdCacheInterceptor)
+  @CacheTTL(1000*60*60*24) 
+  @CacheKey('patient')
   findOne(@Param("id") id:string) {
 
     return this.doctorService.findOne(id)

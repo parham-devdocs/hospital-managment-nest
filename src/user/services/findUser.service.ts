@@ -14,6 +14,7 @@ export class FindUserService {
 
     // ✅ Find user by ID - returns null if not found
     async findById(id: string): Promise<UserEntity | null> {
+        console.log({id})
         return await this.authRepo.findOne({
             where: { id }
         });

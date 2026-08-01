@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   Put,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateDoctorSpecialtyDto } from './dto/create-doctor-specialty.dto';
 import { UpdateDoctorSpecialtyDto } from './dto/update-doctor-specialty.dto';
 import { DoctorSpecialtyService } from './doctor-specialty.service';
 import { AddSpecialtyToDoctorDto } from './dto/add-specialty-to-doctor.dto';
+import { IdCacheInterceptor } from './interceptors/id-cache.interceptor';
+import { CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('doctor-specialty')
 export class DoctorSpecialtyController {
@@ -42,8 +45,10 @@ export class DoctorSpecialtyController {
       updateDoctorSpecialtyDto,
     );
   }
-  @Get('/:id')
-  get(@Param('id') id: string) {
-    return this.doctorSpecialtyService.findDoctorSpecialty({id});
+  @Get('/:specialtyId')
+  @UseInterceptors(IdCacheInterceptor)
+  @CacheTTL(1000*60*60*24)
+  get(@Param('specialtyId') specialtyId: string) {
+    return this.doctorSpecialtyService.findDoctorSpecialty({id:specialtyId});
   }
 }

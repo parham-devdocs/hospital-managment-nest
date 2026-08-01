@@ -9,13 +9,16 @@ import {
   NotFoundException,
   Get,
   Param,
-  Delete
+  Delete,
+  UseInterceptors
 } from '@nestjs/common';
 import {type Response } from 'express';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { CreatePatientService } from './services/createPatient.service';
 import { FindUserService } from 'src/user/services/findUser.service';
 import { RemovePatientService } from './services/removePatient.service';
+import { IdCacheInterceptor } from './interceptors/id-cache.interceptor';
+import { CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('patient')
 
@@ -58,9 +61,11 @@ export class PatientController {
       }
   }
 
-  @Get("/:id")
-  async findPatient(@Param("id") id:string){
-return this.findPatientService.findById(id)
+  @Get("/:patientId")
+  @UseInterceptors(IdCacheInterceptor)
+  @CacheTTL(86400) 
+  async findPatient(@Param("patientId") patientId:string){
+return this.findPatientService.findById(patientId)
   }
 
   @Delete("/:id")
