@@ -10,10 +10,20 @@ import { LogoutService } from './services/auth/logout.service';
 import { PasswordService } from './services/password.service';
 import { JWTService } from './services/jwt.service';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { FileService } from 'src/file/file.service';
 
 @Module({
   controllers: [RegisterController, LoginController],
-  providers: [RegsiterService,AuthService,LoginService,LogoutService,RegsiterService, PasswordService,JWTService],
+  providers: [
+    RegsiterService,
+    AuthService,
+    LoginService,
+    LogoutService,
+    RegsiterService,
+    PasswordService,
+    JWTService,
+    FileService,
+  ],
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
     JwtModule.register({

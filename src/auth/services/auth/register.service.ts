@@ -1,4 +1,9 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+// register.service.ts
+import {
+  Injectable,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -6,6 +11,7 @@ import { RegisterAuthDto } from 'src/auth/dto/register-auth.dto';
 import { JWTService } from '../jwt.service';
 import { RegisterServiceResponse } from 'src/auth/types';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { FileService} from 'src/file/file.service';
 
 @Injectable()
 export class RegsiterService {
@@ -14,19 +20,24 @@ export class RegsiterService {
     private userRepository: Repository<UserEntity>,
     private dataSource: DataSource,
     private readonly jwtService: JWTService,
+    private readonly fileService: FileService
   ) {}
 
-  async register(signUpDto: RegisterAuthDto): Promise<RegisterServiceResponse> {
-    const {
-      email,
-      password,
-      fullName,
-      address,
-      age,
-      gender,
-      phoneNumber,
-      avatar_url,
-    } = signUpDto;
+  async saveAvatarFile(file: any): Promise<string> {
+    if (!file) {
+      throw new BadRequestException('Avatar file is required');
+    }
+
+    const avatarUrl = await this.fileService.uploadFile(file, 'images');
+    return avatarUrl.path;
+  }
+
+  async register(
+    signUpDto: RegisterAuthDto,
+    avatarUrl: string,
+  ): Promise<RegisterServiceResponse> {
+    const { email, password, fullName, address, age, gender, phoneNumber } =
+      signUpDto;
 
     const existingUser = await this.userRepository.findOne({
       where: { email },
@@ -45,7 +56,7 @@ export class RegsiterService {
       phoneNumber,
       address,
       age,
-      avatar_url,
+      avatar_url: avatarUrl,
       gender,
     });
 

@@ -19,11 +19,12 @@ import { AppointmentEntity } from './appointment/entities/appointment.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
-import { UploaderModule } from './uploader/uploader.module'; 
+import { join } from 'path';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
-    UploaderModule,
+    FileModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -38,7 +39,7 @@ import { UploaderModule } from './uploader/uploader.module';
             host: configService.get('REDIS_HOST', 'localhost'),
             port: configService.get('REDIS_PORT', 6379),
           },
-          ttl: configService.get('REDIS_TTL', 60) * 1000, 
+          ttl: configService.get('REDIS_TTL', 60) * 1000,
           database: configService.get('REDIS_DB', 0),
         }),
       }),
@@ -48,12 +49,19 @@ import { UploaderModule } from './uploader/uploader.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: "postgres",
+        type: 'postgres',
         host: configService.get('DB_HOST', 'localhost'),
-        port: parseInt(configService.get('DB_PORT') as string || '5432'),
+        port: parseInt((configService.get('DB_PORT') as string) || '5432'),
         username: configService.get('DB_USERNAME') as string,
         password: configService.get('DB_PASSWORD') as string,
-        entities: [UserEntity, PatientEntity, SpecialtyEntity, DoctorEntity, TimeAvailability, AppointmentEntity],
+        entities: [
+          UserEntity,
+          PatientEntity,
+          SpecialtyEntity,
+          DoctorEntity,
+          TimeAvailability,
+          AppointmentEntity,
+        ],
         database: configService.get('DB') as string,
         synchronize: configService.get('NODE_ENV') !== 'production',
         logger: 'advanced-console',
@@ -68,7 +76,7 @@ import { UploaderModule } from './uploader/uploader.module';
     DoctorModule,
     DoctorSpecialtyModule,
     AvailableTimeModule,
-    AppointmentModule
+    AppointmentModule,
   ],
   controllers: [AppController],
   providers: [
@@ -76,7 +84,7 @@ import { UploaderModule } from './uploader/uploader.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
-    }
+    },
   ],
 })
 export class AppModule {}

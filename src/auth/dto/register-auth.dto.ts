@@ -1,3 +1,4 @@
+// register-auth.dto.ts
 import { Type } from "class-transformer";
 import { 
     IsEmail, 
@@ -10,25 +11,22 @@ import {
     Min,
     Max,
     IsEnum
-  } from "class-validator";
+} from "class-validator";
 import { Gender } from "../types";
-import { Optional } from "@nestjs/common";
-  export class  RegisterAuthDto {
-      @IsEmail({}, { message: 'Please provide a valid email address' })
-      @IsNotEmpty({ message: 'Email is required' })
-      @Matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, {
-          message: 'Invalid email format'
-      })
-      email: string;
-  
-      @IsString()
-      @IsNotEmpty({ message: 'Password is required' })
-      @MaxLength(256, { message: 'Password is too long' })
-      @MinLength(8, { message: 'Password must be at least 8 characters' })
-      password: string;
 
+export class RegisterAuthDto {
+    @IsEmail({}, { message: 'Please provide a valid email address' })
+    @IsNotEmpty({ message: 'Email is required' })
+    @Matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, {
+        message: 'Invalid email format'
+    })
+    email: string;
 
-    
+    @IsString()
+    @IsNotEmpty({ message: 'Password is required' })
+    @MaxLength(256, { message: 'Password is too long' })
+    @MinLength(8, { message: 'Password must be at least 8 characters' })
+    password: string;
 
     @IsString()
     @IsNotEmpty({ message: 'Full name is required' })
@@ -39,11 +37,6 @@ import { Optional } from "@nestjs/common";
     @IsNotEmpty({ message: 'Address is required' })
     @MaxLength(255)
     address: string;
-    
-    @IsString()
-    @Optional()
-    avatar_url:string
-
 
     @IsString()
     @IsNotEmpty({ message: 'Phone number is required' })
@@ -62,5 +55,3 @@ import { Optional } from "@nestjs/common";
     @IsNotEmpty({ message: 'Gender is required' })
     gender: Gender;
 }
-
-  

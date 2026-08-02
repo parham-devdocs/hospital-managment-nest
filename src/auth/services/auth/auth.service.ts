@@ -20,8 +20,8 @@ export class AuthService {
   logout(id:string) {
     return this.logoutService.logout(id);
   }
-  register(registerAuthDto: RegisterAuthDto) {
-    return this.registerService.register(registerAuthDto);
+  register(avatarUrl,registerAuthDto: RegisterAuthDto) {
+    return this.registerService.register(registerAuthDto,avatarUrl);
   }
   
 }
