@@ -2,7 +2,11 @@
 /dist
 /node_modules
 /build
+
+# Upload directories - Add both variations
 /upload
+/upload/*
+
 # Logs
 logs
 *.log
@@ -52,6 +56,9 @@ pids
 *.seed
 *.pid.lock
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
+# Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-/uploads
+
+# Temporary upload files
+*.tmp
+*.temp
