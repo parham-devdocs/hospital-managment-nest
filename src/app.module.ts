@@ -19,9 +19,11 @@ import { AppointmentEntity } from './appointment/entities/appointment.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
+import { UploaderModule } from './uploader/uploader.module'; 
 
 @Module({
   imports: [
+    UploaderModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -66,7 +68,7 @@ import { redisStore } from 'cache-manager-redis-yet';
     DoctorModule,
     DoctorSpecialtyModule,
     AvailableTimeModule,
-    AppointmentModule,
+    AppointmentModule
   ],
   controllers: [AppController],
   providers: [
