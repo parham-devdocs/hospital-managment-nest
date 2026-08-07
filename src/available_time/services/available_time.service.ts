@@ -85,8 +85,11 @@ export class AvailableTimeService {
       where: { date: MoreThan(now), doctor: { id: doctorId },appointmentId:IsNull() },
     });
 
-    return { availableTimes };
-  }
+    return {
+      status: 201,
+      success: true,
+      data:availableTimes
+    };  }
   async update(
     updateAvailableTimeDto: UpdateAvailableTimeDto,
     doctorId: string,
