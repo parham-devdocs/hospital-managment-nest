@@ -8,11 +8,10 @@ services:
       dockerfile: Dockerfile
     container_name: nestjs-app-dev
     ports:
-      - "3000:3000"
-      - "9229:9229" # Node.js debugger
+      - "3001:3001"
     environment:
       - NODE_ENV=development
-      - PORT=3000
+      - PORT=3001
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres

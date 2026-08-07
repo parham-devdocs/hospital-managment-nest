@@ -47,6 +47,9 @@ export class DoctorEntity {
   @Column({ type: 'jsonb', default: [] })
   certifications: Certification[];
 
+  @Column({type:"varchar",nullable:true})
+  bio?:string
+  
   @CreateDateColumn()
   createdAt: Date;
 

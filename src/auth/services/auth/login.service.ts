@@ -7,6 +7,7 @@ import { PasswordService } from '../password.service';
 import { JWTService } from '../jwt.service';
 import { LoginServiceResponse } from 'src/auth/types';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class LoginService {
@@ -15,6 +16,7 @@ export class LoginService {
     private authRepository: Repository<UserEntity>,
     private readonly passwordService: PasswordService,
     private readonly jwtService: JWTService,
+    private readonly logger:LoggerService
   ) {}
 
   async login(loginAuthDto: LoginAuthDto): Promise<LoginServiceResponse> {
@@ -25,15 +27,16 @@ export class LoginService {
       const existingUser = await this.authRepository.findOne({
         where: { email },
       });
-
       if (!existingUser) {
         throw new NotFoundException('User with this email does not exist');
       }
+      this.logger.info("user exists")
 
       // 2. Check if account is active
       if (!existingUser.isActive) {
         throw new UnauthorizedException('Account is deactivated');
       }
+      this.logger.info("user does is active")
 
       // 3. Verify password
       const passwordValidity = await this.passwordService.compare(
@@ -44,6 +47,7 @@ export class LoginService {
       if (!passwordValidity) {
         throw new UnauthorizedException('Invalid password');
       }
+      this.logger.info("user password is valid")
 
       // 4. Generate tokens
       const accessToken = await this.jwtService.generateToken(

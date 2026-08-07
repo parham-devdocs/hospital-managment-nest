@@ -23,7 +23,7 @@ export class FileService {
       const fileName = `${randomUUID()}.${fileExtension}`;
 
       // Create directory path
-      const baseDir = process.env.UPLOAD_DIR || './uploads';
+      const baseDir = process.env.UPLOAD_DIR || '/';
 
       const uploadDir = join(baseDir, folder);
 

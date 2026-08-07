@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsObject, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { Certification, EducationEntry, WorkExperience } from "../types";
 import { Type } from "class-transformer";
 import { DoctorEducationDto } from "./doctor-education-dto";
@@ -27,6 +27,10 @@ export class CreateDoctorDto {
     @ValidateNested({each:true})
     @Type(() => DoctorWorkExperienceDto) 
     workExperiences:WorkExperience[]
+
+    @IsOptional()
+    @IsString()
+    bio?:string
 
     @IsNotEmpty()
     @ValidateNested({each:true})

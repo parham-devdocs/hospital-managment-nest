@@ -23,7 +23,7 @@ export class DoctorService {
 
   async create(createDoctorDto: CreateDoctorDto) {
     try {
-      const { certifications, workExperiences, educations, userId, specialty } =
+      const { certifications, workExperiences, educations, userId, specialty,bio } =
         createDoctorDto;
 
       const userWithDoctor = await this.userService.findWithDoctor(userId);
@@ -59,6 +59,7 @@ export class DoctorService {
 
       const newDoctor = this.doctorRepository.create({
         user,
+        bio,
         specialties: savedSpecialty ? [savedSpecialty] : [],
         educations: educations || [],
         workExperiences: workExperiences || [],
@@ -208,17 +209,22 @@ export class DoctorService {
       where: { id },
       relations: { specialties: true },
     });
-
     if (!doctor) {
       throw new NotFoundException(`Doctor with ID ${id} not found`);
     }
 
     // 2. گرفتن اطلاعات اضافی با QueryBuilder
-    const doctorsWithCount = await this.doctorRepository
+    const doctorWithCount = await this.doctorRepository
       .createQueryBuilder('doctor')
       .leftJoin('doctor.user', 'user')
       .addSelect([
+        'doctor.certifications',
+        'doctor.educations',
+        'doctor.workExperiences',
+        'doctor.createdAt',
+        'doctor.updatedAt',
         'user.id',
+        'doctor.bio',
         'user.fullName',
         'user.email',
         'user.phoneNumber',
@@ -227,9 +233,7 @@ export class DoctorService {
         'user.avatar_url',
         'user.isActive',
       ])
-      .addSelect('doctor.educations', 'educations')
-      .addSelect('doctor.workExperiences', 'workExperiences')
-      .addSelect('doctor.certifications', 'certifications')
+  
       .addSelect(
         'COALESCE(jsonb_array_length(doctor.certifications), 0)',
         'certificationCount',
@@ -244,29 +248,30 @@ export class DoctorService {
       )
       .where('doctor.id = :id', { id })
       .getOne();
-
+console.log({educations:doctorWithCount?.educations})
     return {
       success: true,
       status: 200,
       data: {
-        id: doctor.id,
-        userId: doctor.user?.id,
-        fullName: doctor.user?.fullName,
-        email: doctor.user?.email,
-        phoneNumber: doctor.user?.phoneNumber,
-        gender: doctor.user?.gender,
-        address: doctor.user?.address,
-        avatarUrl: doctor.user?.avatar_url,
-        isActive: doctor.user?.isActive,
-        specialties: doctor.specialties || [],
-        educations: doctor.educations || [],
-        workExperiences: doctor.workExperiences || [],
-        certifications: doctor.certifications || [],
-        certificationCount: doctor.certifications?.length || 0,
-        educationCount: doctor.educations?.length || 0,
-        workExperienceCount: doctor.workExperiences?.length || 0,
-        createdAt: doctor.createdAt,
-        updatedAt: doctor.updatedAt,
+        id: doctorWithCount?.id,
+        userId: doctorWithCount?.user?.id,
+        fullName: doctorWithCount?.user?.fullName,
+        email: doctorWithCount?.user?.email,
+        phoneNumber: doctorWithCount?.user?.phoneNumber,
+        gender: doctorWithCount?.user?.gender,
+        bio:doctorWithCount?.bio,
+        address: doctorWithCount?.user?.address,
+        avatarUrl: doctorWithCount?.user?.avatar_url,
+        isActive: doctorWithCount?.user?.isActive,
+        specialties: doctorWithCount?.specialties || [],
+        educations: doctorWithCount?.educations || [],
+        workExperiences: doctorWithCount?.workExperiences || [],
+        certifications: doctorWithCount?.certifications || [],
+        certificationCount: doctorWithCount?.certifications?.length || 0,
+        educationCount: doctorWithCount?.educations?.length || 0,
+        workExperienceCount: doctorWithCount?.workExperiences?.length || 0,
+        createdAt: doctorWithCount?.createdAt,
+        updatedAt: doctorWithCount?.updatedAt,
       },
     };
   }

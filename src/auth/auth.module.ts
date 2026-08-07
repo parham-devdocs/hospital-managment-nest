@@ -11,6 +11,7 @@ import { PasswordService } from './services/password.service';
 import { JWTService } from './services/jwt.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { FileService } from 'src/file/file.service';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Module({
   controllers: [RegisterController, LoginController],
@@ -23,6 +24,7 @@ import { FileService } from 'src/file/file.service';
     PasswordService,
     JWTService,
     FileService,
+    LoggerService
   ],
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
