@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { RegisterController } from './controllers/register.controller';
 import { LoginController } from './controllers/login.controller';
-import { RegsiterService } from './services/auth/register.service';
 import { LoginService } from './services/auth/login.service';
 import { AuthService } from './services/auth/auth.service';
 import { LogoutService } from './services/auth/logout.service';
@@ -14,13 +12,11 @@ import { FileService } from 'src/file/file.service';
 import { LoggerService } from 'src/logger/logger.service';
 
 @Module({
-  controllers: [RegisterController, LoginController],
+  controllers: [ LoginController],
   providers: [
-    RegsiterService,
     AuthService,
     LoginService,
     LogoutService,
-    RegsiterService,
     PasswordService,
     JWTService,
     FileService,
@@ -33,6 +29,6 @@ import { LoggerService } from 'src/logger/logger.service';
       signOptions: { expiresIn: '1d' },
     }),
   ],
-  exports:[RegsiterService,AuthService]
+  exports:[AuthService]
 })
 export class AuthModule {}
