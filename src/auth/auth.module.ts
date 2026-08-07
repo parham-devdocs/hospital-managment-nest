@@ -33,5 +33,6 @@ import { LoggerService } from 'src/logger/logger.service';
       signOptions: { expiresIn: '1d' },
     }),
   ],
+  exports:[RegsiterService,AuthService]
 })
 export class AuthModule {}

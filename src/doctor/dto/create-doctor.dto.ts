@@ -5,14 +5,13 @@ import { DoctorEducationDto } from "./doctor-education-dto";
 import { DoctorWorkExperienceDto } from "./doctor-work-experience";
 import { DoctorCertificationDto } from "./doctor-certification";
 import { SpecialtyEntity } from "src/doctor-specialty/entities/doctor-specialty.entity";
+import { CreateUserDto } from "src/user/dto/create-user.dto";
+import { RegisterAuthDto } from "src/auth/dto/register-auth.dto";
 
 export class CreateDoctorDto {
 
 
-    
-    @IsString()
-    @IsNotEmpty()
-    userId:string
+
     
     @IsNotEmpty()
     @IsObject()
@@ -36,5 +35,10 @@ export class CreateDoctorDto {
     @ValidateNested({each:true})
     @Type(() => DoctorCertificationDto) 
     certifications:Certification[]
+
+    @IsNotEmpty()
+    @ValidateNested({each:true})
+    @Type(() =>RegisterAuthDto) 
+    user:RegisterAuthDto
     
 }
