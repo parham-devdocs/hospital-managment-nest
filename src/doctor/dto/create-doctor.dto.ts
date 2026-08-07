@@ -6,7 +6,6 @@ import { DoctorWorkExperienceDto } from "./doctor-work-experience";
 import { DoctorCertificationDto } from "./doctor-certification";
 import { SpecialtyEntity } from "src/doctor-specialty/entities/doctor-specialty.entity";
 import { CreateUserDto } from "src/user/dto/create-user.dto";
-import { RegisterAuthDto } from "src/auth/dto/register-auth.dto";
 
 export class CreateDoctorDto {
 
@@ -38,7 +37,7 @@ export class CreateDoctorDto {
 
     @IsNotEmpty()
     @ValidateNested({each:true})
-    @Type(() =>RegisterAuthDto) 
-    user:RegisterAuthDto
+    @Type(() =>CreateUserDto) 
+    user:CreateUserDto
     
 }

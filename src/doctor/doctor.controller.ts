@@ -15,10 +15,8 @@ import { DoctorService } from './doctor.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { FindDoctorQueryDto } from './dto/find-doctors-query';
-import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import {  CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { IdCacheInterceptor } from './interceptors/id-cache.interceptor';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { RegisterAuthDto } from 'src/auth/dto/register-auth.dto';
 
 @Controller('doctor')
 export class DoctorController {
